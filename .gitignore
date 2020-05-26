@@ -1,6 +1,8 @@
 COVID-19/
 COVID-19/*
 
+.DS_Store
+
 # History files
 .Rhistory
 .Rapp.history
@@ -37,3 +39,6 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+.DS_Store
+.DS_Store
+.DS_Store

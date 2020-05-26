@@ -24,7 +24,6 @@
     * https://www.hofstede-insights.com/product/compare-countries/
     * https://geerthofstede.com/research-and-vsm/
     * power distance, individualism, masculinity, uncertainty avoidance, long term orientation, indulgence
-    * 
 
 ### Technical Issues
 
@@ -36,12 +35,12 @@
 
 ### Other 
 
-* potential research mentor 
+* Related researcher 
   * Prof. Christopher Berry, Assoc. Prof. Anthony Fowler (field relevant!)
     * [UChicago news article](https://news.uchicago.edu/story/covid-19-pandemic-inspires-scholars-change-course?utm_source=newsletter&utm_medium=email&utm_campaign=UChicago_News_M05_07_2020&mkt_tok=eyJpIjoiTW1NME1USmxZakl4TmpoaCIsInQiOiJMZmtnTnlFWlczN2NwMUJsT011WXozXC9pc0tjWlJ3c3ZOcjhOeERnVzI1YzN1cGNcL21DY2tsK1V0Y3ZFcERydU9PTlJEWlVhR09sZE0xQnBlVlpCeEwxNUZHNUZXSE5GRjlyOVpXeUdTTlNRajl6S1pHQVdpVTJmaDBXRndsVFoyIn0%3D)
     * (a US version of measuring governmental response )
   * Dali Yang & Regina?
-  * NYU Shanghai -- Christina Jenq 
+  * NYU Shanghai -- Prof Jenq 
 * Peter Meeting 1
   * log regression -- growth rate 
   * maybe try exclusion criteria for days to calculate growth rate (num of days between 10 - 1000)
