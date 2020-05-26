@@ -1,0 +1,65 @@
+---
+title: "analysis-1"
+author: "Qitian (Jason) Hu"
+date: "4/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(openxlsx)
+library(lubridate)
+library(knitr)
+
+```
+
+```{r cars}
+
+dxy <- read_csv('/Users/qitianhu/Desktop/COVID-19/DXY-COVID-19-Data-master/csv/DXYArea.csv') %>% 
+  filter(countryName == "中国") %>% 
+  filter(updateTime > "2020-04-08 00:00:00 UTC") %>% 
+  mutate(deathRate = city_deadCount / city_confirmedCount) %>% 
+  na.omit() %>% 
+  # select(c(provinceName, updateTime, cityName, city_confirmedCount, city_suspectedCount, city_curedCount, city_deadCount)) %>% 
+  select(c(updateTime, cityName, deathRate)) %>% 
+  group_by(cityName) %>% 
+  summarise(deathRate_new = max(deathRate)) %>% 
+  rename(city=cityName)
+  
+  
+
+aird <- read.xlsx("/Users/qitianhu/Dropbox/2019_Internship_program/Air_Data/Air-Data-Analysis/*Aggregate-wrangled3.xlsx", sheet=1) %>% 
+  select(c(city, time, composite_index)) %>% 
+  transform(composite_index = as.numeric(composite_index)) %>% 
+  transform(city = ifelse(
+    substr(city, nchar(city),nchar(city)) == "*", 
+    substr(city, 1 ,nchar(city)-1), city)) %>% 
+  transform(city = ifelse(
+    substr(city, nchar(city), nchar(city))== "市",
+    substr(city, 1, nchar(city)-1), city)) %>% 
+  transform(city = ifelse(
+    substr(city, nchar(city), nchar(city))== " ",
+    substr(city, 1, nchar(city)-1), city)) %>% 
+  transform(city = ifelse(city == "销江", "镇江", city)) %>% 
+  transform(city = ifelse(city == "循州", "衢州", city)) %>% 
+  transform(city = ifelse(city == "准安", "淮安", city)) %>% 
+  transform(city = ifelse(city == "红门", "江门", city)) %>% 
+  mutate(time = ymd(paste(time, '.5', sep = '')))
+
+ad <- aird %>% 
+  group_by(city) %>% 
+  summarise(mean_aqi = mean(composite_index))
+
+
+```
+
+
+```{r pressure, echo=FALSE}
+dxy <- dxy %>% 
+  inner_join(ad, on='city')
+
+fit <- lm(deathRate_new ~ mean_aqi, data=dxy)
+summary(fit)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

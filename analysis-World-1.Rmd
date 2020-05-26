@@ -1,0 +1,119 @@
+---
+title: "analysis-World-1"
+author: "Qitian (Jason) Hu"
+date: "5/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(questionr)
+library(tidyselect)
+options(warn=-1)
+
+
+```
+change growth rate to log
+heterosketastic robust
+try: exclusion criteria -- use more consistent measure of virus growth across countries
+e.g. num of date between 100 and 1000 
+
+
+
+```{r build data frame}
+demo <- read.csv('other_data/wiki_democray_index.csv') # democracy score data 
+virus_total <- read.csv('other_data/owid-covid-data.csv') # 
+CI_codebook <- read.csv('factbook.csv/categories.csv')
+CI_code_list <- c('2119', "2102", "2112", "2228", 
+                  "2001", "2206", "2085")
+                  # "2053", "2121", , "2093")
+CI_name_list <- c("pop", "life_exp", "net_migration", "obesity",
+                  "GDP_parity", "edu_expend", "road")
+                  # "airport", "railway",  "water")
+
+# population 2119, life expectancy 2102, net migration rate 2112, 2228 obesity
+# 2001 GDP purchasing power parity, 2206 education expenditure
+# 2053 airport, 2121 railway, 2085 road, 2093 water
+# question: in lm, GDP percapital & total GDP & population
+
+add_CIs <- function(info_df, CI_code_list, CI_name_list){
+  for (i in c(1:length(CI_code_list))){
+    file_name <- paste("c", CI_code_list[i], ".csv", sep='')
+    CI <- read.csv(paste('factbook.csv/data/', file_name, sep="")) %>% 
+      rename(Country = Name)
+    CI <- CI[c('Country', "Value")]
+    info_df <- left_join(info_df, CI, on='Country') %>% 
+      questionr::rename.variable("Value", CI_name_list[i])
+  }
+  return(info_df)
+}
+
+# use log ln number to get the growth rate 
+avg_growth_rate <- function(country_name){
+  virus <- filter(virus_total, virus_total$location == country_name)
+  virus <- filter(virus, virus$total_cases >= 100) 
+  if (nrow(virus) == 0){
+    return(NaN)
+  } else {
+    virus <- mutate(virus, date_no = c(1:nrow(virus)))
+    l <- lm(virus, formula=log(total_cases) ~ date_no)
+    return(summary(l)$coefficients[2])
+  }
+}
+
+
+info_df <- data.frame()
+for (c_name in unique(virus_total$location)){
+  new_row <- data.frame(Country=c_name, 
+                        avg_growth_rate=avg_growth_rate(c_name))
+  info_df <- rbind(info_df, new_row)
+}
+
+info_df <- inner_join(info_df, demo, by='Country') %>% 
+  na.omit() 
+
+dol_num <- function(s){
+  return(as.numeric(substr(s, 2,100)))
+}
+
+info_df <- add_CIs(info_df, CI_code_list, CI_name_list)
+info_df <- na.omit(info_df)
+info_df$GDP_parity <- dol_num(info_df$GDP_parity)
+
+```
+
+
+```{r pm analysis}
+
+a <- lm(info_df, formula=avg_growth_rate ~ Score )
+summary(a)
+
+# full1 <- lm(info_df, formula = avg_growth_rate ~ Score + pop + 
+#               life_exp + net_migration + obesity + GDP_parity + edu_expend
+#             + road)
+# summary(full1)
+```
+
+```{r per million analysis}
+full2 <- lm(info_df, formula = avg_growth_rate ~ Functio.ning.ofgovern.ment + pop + 
+              life_exp + net_migration + obesity + GDP_parity/pop + edu_expend/(GDP_parity/pop)
+            + road)
+summary(full2)
+```
+
+
+```{r}
+full2 <- lm(info_df, formula = avg_growth_rate ~ Rank + pop + 
+              life_exp + net_migration + obesity + GDP_parity + edu_expend
+            + road)
+summary(full2)
+
+```
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+
