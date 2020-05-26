@@ -26,7 +26,7 @@ e.g. num of date between 100 and 1000
 ```{r build data frame}
 demo <- read.csv('other_data/wiki_democray_index.csv') # democracy score data 
 virus_total <- read.csv('other_data/owid-covid-data.csv') # 
-CI_codebook <- read.csv('factbook.csv/categories.csv')
+CI_codebook <- read.csv('other_data/factbook/categories.csv')
 CI_code_list <- c('2119', "2102", "2112", "2228", 
                   "2001", "2206", "2085")
                   # "2053", "2121", , "2093")
@@ -42,7 +42,7 @@ CI_name_list <- c("pop", "life_exp", "net_migration", "obesity",
 add_CIs <- function(info_df, CI_code_list, CI_name_list){
   for (i in c(1:length(CI_code_list))){
     file_name <- paste("c", CI_code_list[i], ".csv", sep='')
-    CI <- read.csv(paste('factbook.csv/data/', file_name, sep="")) %>% 
+    CI <- read.csv(paste('other_data/factbook/data/', file_name, sep="")) %>% 
       rename(Country = Name)
     CI <- CI[c('Country', "Value")]
     info_df <- left_join(info_df, CI, on='Country') %>% 
