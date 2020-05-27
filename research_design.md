@@ -12,11 +12,13 @@
 
 ### Diff-in-diff 
 
-* 
+* the framework doesn't seem to fit: Diff-in-diff measures effect of an occurance of a treatment in time, but the effect of polity/culture is continuous, and the virus is the 'treatment'.
+* +need a more systematic exploration
 
-### synthetic control 
+### Synthetic control 
 
 * consider virus as an event affecting different countries differently 
+* may not be a canonical case where this method can be used 
 
 ### survival analysis 
 

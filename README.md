@@ -14,6 +14,9 @@
 
 * influence of type of government on controlling the virus 
   * type of gov -- virus 
+* Focus on policy 
+  * how is effectiveness of policy affected by polity 
+  * Reference/Which Measures are Effective in Containing COVID-19?
 * explore a three-layer model: type of gov --affect--> direction/execution of policy --affect--> virus transmission
   * get to know the coefficients -- how gov affect policy, how policy affect virus 
   * hierarchical linear model? Just add another variable?
