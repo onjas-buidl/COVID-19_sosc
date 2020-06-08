@@ -14,7 +14,7 @@ library(questionr)
 library(tidyselect)
 options(warn=-1)
 
-
+library(glm)
 ```
 change growth rate to log
 heterosketastic robust
