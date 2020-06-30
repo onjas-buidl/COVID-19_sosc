@@ -1,4 +1,11 @@
-# Housekeeping 
+# Chinese
+
+* Gov_data/CH_policy_zky
+  * from here, manually collected: http://120.27.61.185:8081/NCOVSYS/index?MENU_ID=27&MENU_URL=template%2Fload%2F48
+
+
+
+# International
 
 * need to put JHU data folder in the root folder 
 
