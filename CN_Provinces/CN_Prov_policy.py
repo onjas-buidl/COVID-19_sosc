@@ -50,8 +50,21 @@ who.groupby('area_covered').count()
 # %% HIT covid (528 China, 528 mainland prov)
 hit = pd.read_csv('Gov_data/hit-covid-master/data/hit-covid-longdata.csv')
 hit = hit[hit.country_name == 'China']
-del hit['unique_id']
+hit.drop(['record_id', 'update', 'country', 'admin1', 'usa_county', 'usa_county_code'], axis=1)
 
 hit.groupby('admin1_name').count()
 
 a = hit[hit.intervention_group == 'mask']
+
+
+
+
+# %% Complexity Science Hub Vienna (no China)
+
+csh = pd.read_csv('Gov_data/covid19-interventionmeasures-master/Version1/COVID19_non-pharmaceutical-interventions.csv',
+                   encoding="ISO-8859-1")
+
+# csh = csh[csh.Country == 'China']
+
+
+
