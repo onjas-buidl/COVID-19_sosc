@@ -5,45 +5,53 @@ import requests
 import json
 from tqdm import tqdm
 
-# %% load maps
-map = gpd.read_file('CN_Provinces/Geo_data_CN/chn_admbnda_adm2_ocha.shp', encoding='utf-8')
-a = pd.DataFrame(map)
+
+with open('CN_Provinces/省市对照表.json') as json_file:
+    code2city = json.load(json_file)
+city2code = dict(map(reversed, code2city.items()))
+
+# %% load data -- cts (map of all cities)
+cts = gpd.read_file('CN_Provinces/Geo_data_CN/chn_admbnda_adm2_ocha.shp', encoding='utf-8')
+cts['ADM2_ZH'] = cts.ADM2_ZH.apply(lambda x: x[:-3] if ('〔' in x or '[' in x) else x)
+cts.at[6, 'ADM2_ZH'] = '莱芜区'
+replace_n = {'海西蒙古族自治州':'海西蒙古族藏族自治州', '那曲地区':'那曲市', '株州市':'株洲市'}
+cts['ADM2_ZH'] = cts.ADM2_ZH.apply(lambda x: replace_n[x] if x in replace_n.keys() else x)
+cts = cts[(cts.ADM2_ZH != '香港') & (cts.ADM2_ZH != '澳门')]
+# cts['city_code2020'] = cts.ADM2_PCODE.apply(lambda s: int(s[2:]))
+cts['city_code2020'] = cts.ADM2_ZH.apply(lambda s: city2code[s])
+cts.set_index('city_code2020', inplace=True)
+
+a = pd.DataFrame(cts.drop('geometry', axis=1))
+# cn is the map of provincial boundaries
 cn = gpd.read_file('CN_Provinces/Geo_data_CN/全国.json')
 
-# %% get city-level geopandas data
+dates = [str(i) for i in range(20200123, 20200132)] + \
+	[str(i) for i in range(20200201, 20200214)]
 
-with open('CN_Provinces/Prov-city.json') as json_file:
-    code2city = json.load(json_file)
-codes = []
-for c in code2city.keys():
-	if c[-2:] == '00':
-		codes.append(c)
-# %%
-cn = pd.DataFrame()
-CN = gpd.GeoDataFrame()
-error_list = []
-save_dict = {}
-# %%
-for c in tqdm(codes):
-	r = requests.get('https://geo.datav.aliyun.com/areas_v2/bound/'+c+'_full.json')
-	if r.status_code != '200':
-		error_list.append(c)
-		continue
-	open('/Users/qitianhu/Downloads/' + c + '.json', 'wb').write(r.content)
+policy = pd.read_excel('CN_Provinces/CN_Policy/V2-Yuhang_Pan-CN_lockdown_data.xlsx')
 
-	# save_dict[c] = r.text
-	# CN = CN.append(json.loads(r.text), ignore_index=True)
-	# cn = cn.append(json.loads(r.text), ignore_index=True)
-	# open('facebook.ico', 'wb').write(r.content)
+# %% create date columns in map to show policy situation
 
-# %%
+for d in dates:
+	cts[d] = 0
+	for n in policy['city_code2020']:
+		if int(policy[policy.city_code2020 == n]['new_start'].values) <= int(d):
+			cts.at[str(n), d] = 1
+a = pd.DataFrame(cts.drop('geometry', axis=1))
 
 
-a = gpd.read_file('/Users/qitianhu/Downloads/黑龙江省.json')
+for n in policy['city_code2020']:
+	assert str(n) in cts.index
 
-r = requests.get('https://geo.datav.aliyun.com/areas_v2/bound/230600_full.json')
-
-
-
-a.plot()
-plt.show()
+# %% Plotting pictures for animation
+for d in tqdm(dates):
+	fig, ax = plt.subplots(figsize=(15, 15))
+	cn.boundary.plot(ax=ax)
+	cts.plot(ax=ax, column=d)
+	plt.title('Locked-down Cities on '+ d[:4] + '-' + d[4:6] + '-' + d[6:])
+	plt.savefig('CN_Provinces/Geo_data_CN/animate_Yuhang_policy/'+d+'.png')
+	plt.close(fig='all')
+# %% ========================
+# %% Plot time since Wuhan lockdown and first case in town
+import subprocess
+subprocess.call(["python", "plot-Virus_info.py"], cwd="CN_Provinces")

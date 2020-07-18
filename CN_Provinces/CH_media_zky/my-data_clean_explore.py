@@ -13,8 +13,6 @@ import matplotlib.dates as mdates
 import numpy as np
 
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']# 用黑体显示中文
-# matplotlib.rcParams['font.sans-serif']=['FangSong']
-# matplotlib.rcParams['axes.unicode_minus']=False
 matplotlib.rcParams['axes.unicode_minus'] = False # in case minus sign is shown as box
 
 news = pd.read_excel('CH_media_zky/data/一月各省新冠政策汇总.xlsx')
