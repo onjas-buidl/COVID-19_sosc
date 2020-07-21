@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{amsthm} %lets us use \begin{proof}
+\usepackage[]{amssymb} %gives us the character \varnothing
+\usepackage{amsmath}
+\usepackage[shortlabels]{enumitem}
+
+
+\title{What Does Policy Responses During COVID-19 Reveal of Chinese Local Governments}
+\author{Qitian (Jason) Hu}
+
+%This information doesn't actually show up on your document unless you use the maketitle command below
+
+\linespread{1.1}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{graphicx}
+
+
+\begin{document}
+
+\maketitle %This command prints the title based on information entered above
+
+\section{Explore with Matching/Multivar Regression}
+
+For example, let the cut-off date, $i$, be Feb 6, 2020. 
+
+$L$ is the dummy variable indicating whether the city has locked-down on day $i$.
+
+$Ind_2$: the percentage of the second industry in GDP is over 50\%.
+
+$Ind_3$: the percentage of the third industry in GDP is over 50\%.
+
+$C$: the number of confirmed COVID-19 case on day $i$. 
+
+$X$: the independent variables of interest, for example age of the city secretary.
+\\
+Run the following regression for Non-Hubei cities:
+\begin{equation}
+  L = \alpha + \beta X + \gamma_1 Ind_2 + \gamma_2 Ind_3 + \gamma_3 C + \epsilon  
+\end{equation}
+
+
+\end{document}

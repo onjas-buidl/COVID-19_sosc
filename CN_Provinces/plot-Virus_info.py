@@ -58,8 +58,6 @@ def get_city_info(ct_name='嘉兴', prov_name="浙江省",search_type='confirmed
     plt.close(fig='all')
     return count
 
-# get_city_info(ct_name='秦皇岛',
-#               prov_name='河北省')
 
 
 # %% manually produce dictionary
@@ -127,12 +125,12 @@ pc.at[94, 'dateFirstCase'] = '2020-02-15' # 内蒙古阿拉善盟好像没有病
 pc.at[56, 'dateFirstCase'] = '2020-01-24' # 山东-济南-莱芜区直接算成济南市的情况
 # pc['dateFirstCase'] = pc['dateFirstCase'].apply(lambda x: str(x)[4:6]+'-'+str(x)[6:8]+'-2020')
 pc['dateFirstCase'] = pc['dateFirstCase'].apply(pd.to_datetime)
-pc['daySinceFirstCase'] = (pc['dateFirstCase'] - pc['lockdown']).apply(lambda x: x.days)
+pc['daySinceFirstCase'] = (pc['lockdown'] - pc['dateFirstCase']).apply(lambda x: x.days)
 
 # 对于没有病例的那几位，再设为 +20
-pc.at[15, 'daySinceFirstCase'] = 20 # 山东东营好像没有病例 -- 直接算成 2.15吧
-pc.at[38, 'daySinceFirstCase'] = 20 # 辽宁抚顺好像没有病例 -- 直接算成 2.15
-pc.at[94, 'daySinceFirstCase'] = 20 # 内蒙古阿拉善盟好像没有病例 -- 算成 2.15
+pc.at[15, 'daySinceFirstCase'] = -20 # 山东东营好像没有病例 -- 直接算成 2.15吧
+pc.at[38, 'daySinceFirstCase'] = -20 # 辽宁抚顺好像没有病例 -- 直接算成 2.15
+pc.at[94, 'daySinceFirstCase'] = -20 # 内蒙古阿拉善盟好像没有病例 -- 算成 2.15
 
 pc.to_excel('CN_Provinces/CN_Policy/V3-Yuhang_Pan-CN_lockdown_data.xlsx')
 
@@ -143,7 +141,7 @@ plt.close(fig='all')
 
 
 # %% plot with label
-fig, ax = plt.subplots(figsize=(15, 15))
+fig, ax = plt.subplots(figsize=(10, 10))
 # fig.set_dpi
 for i in range(pc.shape[0]):
     plt.plot(pc.iloc[i].daySinceWuhanLock, pc.iloc[i].daySinceFirstCase, '.')
@@ -153,7 +151,7 @@ for i in range(pc.shape[0]):
 plt.xlabel('Lockdown Time (day since Wuhan lockdown)')
 plt.ylabel('Lockdown Date since first case in the city')
 plt.title('Graph showing Policy Responsiveness Among Lockdown cities (东营、抚顺、阿拉善盟 didn\'t have a case)')
-plt.savefig('CN_Provinces/*Graphs/firstCase-VS-wuhanLockdown.png', dpi=300)
+plt.savefig('CN_Provinces/*Graphs/firstCase-VS-wuhanLockdown-V1.png', dpi=300)
 plt.close(fig='all')
 
 # ================

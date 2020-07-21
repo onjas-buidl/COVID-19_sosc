@@ -4,4 +4,17 @@
     <option name="languageLevel" value="ES6" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6" project-jdk-type="Python SDK" />
+  <component name="RMarkdownSettings">
+    <option name="renderProfiles">
+      <map>
+        <entry key="$PROJECT_DIR$/CN_Provinces/Pop_Movement/腾讯流动数据 COVID-19_TCM-50d_China-master/code/TCM_poisson_reg_model.Rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="knitRootDirectory" value="$PROJECT_DIR$/CN_Provinces/Pop_Movement/腾讯流动数据 COVID-19_TCM-50d_China-master/code" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
 </project>

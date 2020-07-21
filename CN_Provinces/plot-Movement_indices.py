@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']# 用黑体显示中文
 matplotlib.rcParams['axes.unicode_minus'] = False # in case minus sign is shown as box
 
-bd = pd.read_excel('CN_Provinces/++baidumap-master2020/Data/migrate_Trend.xlsx',
+bd = pd.read_excel('CN_Provinces/Pop_Movement/baidu_index-2019~20/Data/migrate_Trend.xlsx',
                    sheet_name='internalflowhistory')
 bd.dropna(inplace=True)
 bd.rename(columns={'Unnamed: 0': 'name', 'Unnamed: 1': 'type'}, inplace=True)
