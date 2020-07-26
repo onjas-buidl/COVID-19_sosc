@@ -68,8 +68,8 @@ def get_city_info_dict(prov_name='河北省',
     # ct_name='保定'
     # search_type='confirmedCount'
     count = []
-    dict_memory = {i: 0 for i in dates}
-    if prov_name[-1:]!='市':
+    dict_memory = {i: -1 for i in dates}
+    if prov_name[-1:] != '市':
         for d in dates:
             with open('COVID-19/DXY-CN-by_city/' + d + '.json') as json_file:
                 day = json.load(json_file)
@@ -151,7 +151,7 @@ for i in range(pc.shape[0]):
 plt.xlabel('Lockdown Time (day since Wuhan lockdown)')
 plt.ylabel('Lockdown Date since first case in the city')
 plt.title('Graph showing Policy Responsiveness Among Lockdown cities (东营、抚顺、阿拉善盟 didn\'t have a case)')
-plt.savefig('CN_Provinces/*Graphs/firstCase-VS-wuhanLockdown-V1.png', dpi=300)
+plt.savefig('CN_Provinces/*media_analysis_graph/firstCase-VS-wuhanLockdown-V1.png', dpi=300)
 plt.close(fig='all')
 
 # ================

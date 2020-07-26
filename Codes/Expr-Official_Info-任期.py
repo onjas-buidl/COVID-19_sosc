@@ -6,8 +6,8 @@ from tqdm import tqdm
 from collections import Counter
 import statsmodels.api as sm
 
+# %% basic plot
 cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cs['tenure'] = (pd.to_datetime('2020-02-01') - cs['inaug_time'].apply(pd.to_datetime)).astype('<m8[Y]')
 cs.tenure.hist(bins=8)
 plt.show()
 cs_lc = cs[cs.locked_down]
@@ -38,7 +38,23 @@ axes2.set_ylabel('Number of officials')
 plt.title('Percentage of officials that choosed lockdown vs. Tenure in Feb 2020')
 plt.legend()
 # plt.show()
-plt.savefig('CN_Provinces/市领导数据/Exports/pct_lck_vs_tenure.png')
+plt.savefig('CN_Provinces/市领导数据/Yuhang封城市委书记数据/pct_lck_vs_tenure.png')
 plt.close(fig='all')
+
+
+# %% Causal analysis with OLS
+
+cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
+cs = cs[cs.provincecode != 420000]  # 只看非湖北的
+# 再把辽宁、江西、内蒙古给排除了
+# cs = cs[cs.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
+
+cs = cs[cs.tenure <= 5]
+# cs = cs[(cs.tenure <= 4) & (cs.tenure >= 3)]
+
+# mod = sm.OLS(cs.locked_down.apply(int), cs.tenure)
+mod = sm.OLS(cs.locked_down.apply(int), cs[['tenure', 'age_feb20']])
+res = mod.fit()
+print(res.summary())
 
 

@@ -24,26 +24,9 @@ cs.age.mean()
 cs.age.quantile(.1)
 cs.age.quantile(.9)
 
-# cs.age.hist()
-# plt.show()
-
-
-
 pc = pd.read_excel('CN_Provinces/CN_Policy/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
 pc['age'] = (pd.to_datetime('2020-02-01') - pc['birthmonth']).astype('<m8[Y]')
 pc.age.mean()
-
-
-# %% perform Statistical significance test
-c = 0
-l = list(cs.age.dropna())
-for i in range(10000):
-	# selected = []
-	# for j in range(pc.shape[0]):
-	# 	selected.append(random.choice(l))
-
-	if np.mean(random.choices(l, k=pc.shape[0])) >= 55.6:
-		c += 1
 
 
 # %% Processing to have the full 2020.7 City Secretary list
@@ -144,107 +127,25 @@ for ct_name in error_list:
 cs20.to_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V1.xlsx', index=False)
 
 
-# %% Combine & Produce final aggregate dataset
+# %% 数据创建！Combine & Produce final aggregate dataset
 """
 主要issue是2020.2：到底算不算决定lockdown policy的人呢
 非武汉城市的lockdown是1.25 - 2.13
 	一月份那几位的上任都在这个时段之前，所以可以算进去
 """
+
 cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V1.xlsx')
 cs20 = cs20[cs20.rule_in_covid]
 cs20['age_feb20'] = (pd.to_datetime('2020-02-01') - cs20['birthmonth'].apply(pd.to_datetime)).astype('<m8[Y]')
+
+# add lockdown info
 pc = pd.read_excel('CN_Provinces/CN_Policy/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
-cs20['locked_down'] = cs20.citycode.apply(lambda x: x/100 in l)
-# cs20['lc_date'] = None
+cs20['locked_down'] = cs20.citycode.apply(lambda x: x/100 in list(pc.city_code2010))
 pc_need = pc[['daySinceFirstCase']]
-pc_need['citycode'] = pc.city_code2010 * 100
+pc_need['citycode'] = pc.city_code2010.copy() * 100
 pc_need['lockdown_date'] = pc.lockdown
 cs20 = pd.merge(cs20, pc_need, on='citycode', how='left')
 
+cs20['tenure'] = (pd.to_datetime('2020-02-01') - cs20['inaug_time'].apply(pd.to_datetime)).astype('<m8[Y]')
+
 cs20.to_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx', index=False)
-
-
-# %% 把全部官员替换疫情中的官员，+ statistical check
-cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cs20 = cs20[cs20.provincecode != 420000]  # 只看非湖北的
-# 再把辽宁、江西、内蒙古给排除了
-cs20 = cs20[cs20.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
-
-
-cs20_lc = cs20[cs20.locked_down]
-cs20_lc.age_feb20.mean()
-cs20[~cs20['locked_down']].age_feb20.mean()
-
-
-lc_mean = cs20_lc.age_feb20.mean()
-c = 0
-n = 100000
-l = list(cs20.age_feb20)
-for i in tqdm(range(n)):
-	if np.mean(random.choices(l, k=90)) >= lc_mean:
-		c += 1
-
-print('p-value is:', c/n)  # it's fucking significant!
-
-
-
-
-# %% further Histograms
-cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cs20 = cs20[cs20.provincecode != 420000]  # 只看非湖北的
-
-cs20.age_feb20.hist(bins=17)
-cs20_lc.age_feb20.hist(bins=10, color='red')
-plt.title('Age distribution of officials: total vs. lock-down officials')
-# plt.savefig('CN_Provinces/市领导数据/Exports/Age_distrib_by_lockdown.png')
-plt.show()
-# %% Percentage by age group
-from collections import Counter
-np.histogram(cs20.age_feb20)
-# plot the age group lockdown
-c_lk = dict(Counter(cs20_lc.age_feb20))
-c_all = dict(Counter(cs20.age_feb20))
-# c_lk = np.histogram(cs20_lc.age_feb20, bins=10)
-# c_all = np.histogram(cs20.age_feb20, bins=17)
-
-age_range = [i for i in range(44, 62)]
-percentages = []
-for i in age_range:
-	if i not in c_lk.keys():
-		percentages.append(0)
-	else:
-		percentages.append(c_lk[i] / c_all[i])
-
-plt.bar(x=age_range, height=percentages)
-# plt.show()
-plt.title('Percentage of officials that choosed lockdown vs. Age group')
-# plt.savefig('CN_Provinces/市领导数据/Exports/pct_lck_vs_age.png')
-plt.show()
-
-
-
-
-# %% ########## More qualitative exploration ##########
-cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cs20.sort_values('provincename', inplace=True)
-cols = cs20.columns.tolist()
-cols = [cols[-2]] + cols[:-2] + [cols[-1]]
-cs20 = cs20[cols]
-# Ass
-# %% Regression: how does one extra age contribute to lkd choice
-
-cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cs = cs[cs.provincecode != 420000]  # 只看非湖北的
-# 再把辽宁、江西、内蒙古给排除了
-# cs20 = cs20[cs20.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
-cs = cs[cs.age_feb20 >= 56]
-
-
-mod = sm.OLS(cs.locked_down.apply(int), cs.age_feb20 )
-res = mod.fit()
-print(res.summary())
-
-
-
-
-

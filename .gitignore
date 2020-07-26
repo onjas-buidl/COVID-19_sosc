@@ -16,10 +16,10 @@ COVID-19/*
 # Example code in package build process
 *-Ex.R
 
-# Output files from R CMD build
+# Export files from R CMD build
 /*.tar.gz
 
-# Output files from R CMD check
+# Export files from R CMD check
 /*.Rcheck/
 
 # RStudio files

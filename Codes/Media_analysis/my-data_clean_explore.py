@@ -1,8 +1,6 @@
 """
-北京的数据不太好 有中央部委的，没什么地方性的。
-湖北的数据，obviously, 也不太好
-西藏没有任何relax policy的数据（官网上有） -- 数据收集有疏漏
-	暂时除去西藏数据
+采取xx日报（省委机关报）的新冠相关新闻报道
+1.24 为除夕，25，26初一初二
 """
 
 from functools import reduce
@@ -15,34 +13,11 @@ import matplotlib.dates as mdates
 import numpy as np
 
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']# 用黑体显示中文
-# matplotlib.rcParams['font.sans-serif']=['FangSong']
-# matplotlib.rcParams['axes.unicode_minus']=False
 matplotlib.rcParams['axes.unicode_minus'] = False # in case minus sign is shown as box
 
-
-xg1 = pd.read_csv('Gov_data/CH_media_zky/新冠1.csv')
-xg2 = pd.read_csv('Gov_data/CH_media_zky/新冠2.csv')
-xg1.dropna(inplace=True)
-xg2.dropna(inplace=True)
-xg = xg1.append(xg2)
-xg.rename(columns={'标题': 'title', '发布日期': 'date', '省份': 'prov'}, inplace=True)
-xg = xg[xg.prov != '西藏']
-xg.drop(xg[xg.prov == '省份'].index, inplace=True)
-del xg['操作']
-del xg1, xg2
-
-def remove_dot(s):
-	if ('...' ==  s[-3:]):
-		return s[:-3]
-	else:
-		return s
+news = pd.read_excel('CN_media/data/一月各省新冠政策汇总.xlsx')
 
 
-xg['title'] = xg['title'].apply(remove_dot)
-xg.drop_duplicates(inplace=True)
-
-xg['date'] = xg['date'].apply(pd.to_datetime)
-xg.set_index('date', inplace=True)
 
 control_words = ['联防联控', '监督', '举报', '工作实施', '基层医疗卫生', '遗体', '物资保障', '绿色通道', '爱国卫生运动', '大清扫', '大消毒',
                  '延迟企业复工', '集中收治', '排查力度', '阻断传播', '工作指挥部', '紧急通知', '防控工作', '新闻发布会',
@@ -102,7 +77,7 @@ a.plot(y = ['control_count', 'relax_count'], kind='bar')
 plt.title('control+relax policy count')
 plt.xticks(rotation=45)
 leg = plt.legend()
-plt.savefig('Gov_data/CH_media_zky/Graphs/control-relax_policy_by_prov.png', dpi=300)
+plt.savefig('Gov_data/CN_media/media_analysis_graph/control-relax_policy_by_prov.png', dpi=300)
 plt.show()
 
 # %% control和relax的比值
@@ -117,7 +92,7 @@ a.plot(y = 'strigency_ratio', kind='bar')
 plt.title('2020年一月到四月各省strigency index')
 plt.xticks(rotation=45)
 leg = plt.legend()
-plt.savefig('Gov_data/CH_media_zky/Graphs/2020年一月到四月各省strigency_index.png', dpi=300)
+plt.savefig('Gov_data/CN_media/media_analysis_graph/2020年一月到四月各省strigency_index.png', dpi=300)
 # plt.show()
 
 
@@ -128,7 +103,7 @@ a.sort_values(by=[('type', 'count')], ascending=False, inplace=True)
 plt.xticks(rotation=45)
 plt.bar(x=a[('type', 'count')].index, height=list(a[('type', 'count')]) )
 plt.title('Number of COVID-Targeting Policies before Mar 2020')
-plt.savefig('Gov_data/CH_media_zky/Graphs/initial_control_policy_by_prov.png', dpi=300)
+plt.savefig('Gov_data/CN_media/media_analysis_graph/initial_control_policy_by_prov.png', dpi=300)
 # plt.show()
 
 # %% ========== 全国放松政策 by 省
@@ -137,7 +112,7 @@ a.sort_values(by=[('type', 'count')], ascending=False, inplace=True)
 plt.xticks(rotation=45)
 plt.bar(x=a[('type', 'count')].index, height=list(a[('type', 'count')]) )
 plt.title('Number of Relaxing Policies')
-plt.savefig('Gov_data/CH_media_zky/Graphs/relax_policy_by_prov.png', dpi=300)
+plt.savefig('Gov_data/CN_media/media_analysis_graph/relax_policy_by_prov.png', dpi=300)
 # plt.show()
 
 # %% ========== 多省份抗疫政策变化图
@@ -162,7 +137,7 @@ fig.autofmt_xdate()
 ax.fmt_xdata = mdates.DateFormatter('%m-%d')
 leg = ax.legend()
 # plt.show()
-plt.savefig('Gov_data/CH_media_zky/Graphs/随时间变化-'+reduce(lambda i,j: i+j, prov_list) +'.png')
+plt.savefig('Gov_data/CN_media/media_analysis_graph/随时间变化-'+reduce(lambda i,j: i+j, prov_list) +'.png')
 
 # %% ========== 单省份抗疫政策变化图
 # t = xg[xg.type == 1]
@@ -186,7 +161,7 @@ fig.autofmt_xdate()
 ax.fmt_xdata = mdates.DateFormatter('%m-%d')
 leg = ax.legend()
 plt.show()
-# plt.savefig('Gov_data/CH_media_zky/Graphs/随时间变化-'+reduce(lambda i,j: i+j, prov_list) +'.png')
+# plt.savefig('Gov_data/CN_media/media_analysis_graph/随时间变化-'+reduce(lambda i,j: i+j, prov_list) +'.png')
 
 
 
