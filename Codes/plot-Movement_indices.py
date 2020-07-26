@@ -54,9 +54,3 @@ plt.xticks(rotation=45)
 plt.title(city_name+' - in-city movement plot. Red: 2020 Blue: 2019')
 plt.show()
 
-
-# %%
-
-
-
-

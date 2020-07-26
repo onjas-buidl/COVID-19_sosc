@@ -61,6 +61,7 @@ def get_city_info(ct_name='嘉兴', prov_name="浙江省",search_type='confirmed
 
 
 # %% manually produce dictionary
+
 def get_city_info_dict(prov_name='河北省',
     ct_name='保定',
     search_type='confirmedCount'):

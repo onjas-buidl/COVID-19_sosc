@@ -26,7 +26,7 @@ for i in tenure_range:
 	else:
 		percentages.append(c_lk[i] / c_all[i])
 
-
+# 同时 plot bar graph line graph (two axses)
 plt.figure()
 plt.bar(tenure_range, percentages, label='lck percentage')
 plt.ylabel('Percentage of lockdown')

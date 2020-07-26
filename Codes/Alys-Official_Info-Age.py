@@ -36,8 +36,6 @@ for i in tqdm(range(n)):
 print('p-value is:', c/n)  # it's fucking significant!
 
 
-
-
 # %% further Histograms
 cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
 cs20 = cs20[cs20.provincecode != 420000]  # 只看非湖北的
@@ -79,7 +77,7 @@ cs20.sort_values('provincename', inplace=True)
 cols = cs20.columns.tolist()
 cols = [cols[-2]] + cols[:-2] + [cols[-1]]
 cs20 = cs20[cols]
-# Ass
+
 # %% Regression: how does one extra age contribute to lkd choice
 
 cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
