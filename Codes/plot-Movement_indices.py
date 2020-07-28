@@ -26,7 +26,7 @@ dates = list(map(lambda d: d[4:], ['20190112', '20190113', '20190114', '20190115
 bd19 = bd[['name', 'type'] + ['2019'+i for i in dates]]
 bd20 = bd[['name', 'type'] + ['2020'+i for i in dates]]
 
-policy = pd.read_excel('CN_Provinces/CN_Policy/V3-Yuhang_Pan-CN_lockdown_data.xlsx')
+policy = pd.read_excel('CN_Provinces/CN_Policy-不用了/V3-Yuhang_Pan-CN_lockdown_data.xlsx')
 # %% general difference
 
 differences = []

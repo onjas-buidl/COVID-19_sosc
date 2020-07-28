@@ -18,13 +18,13 @@ cs = cs[cs.year == 2018]
 cs['birthmonth'] = cs.bmymager.apply(pd.to_datetime)
 cs['age'] = (pd.to_datetime('2018-02-01') - cs['birthmonth']).astype('<m8[Y]')
 # cs['birth'] = cs.bmymager.apply(pd.to_datetime)
-cs.to_excel('CN_Provinces/CN_Policy/2018-all_secretary_info.xlsx', index=False)
+cs.to_excel('CN_Provinces/CN_Policy-不用了/2018-all_secretary_info.xlsx', index=False)
 cs.age.mean()
 
 cs.age.quantile(.1)
 cs.age.quantile(.9)
 
-pc = pd.read_excel('CN_Provinces/CN_Policy/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
+pc = pd.read_excel('CN_Provinces/CN_Policy-不用了/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
 pc['age'] = (pd.to_datetime('2020-02-01') - pc['birthmonth']).astype('<m8[Y]')
 pc.age.mean()
 
@@ -139,7 +139,7 @@ cs20 = cs20[cs20.rule_in_covid]
 cs20['age_feb20'] = (pd.to_datetime('2020-02-01') - cs20['birthmonth'].apply(pd.to_datetime)).astype('<m8[Y]')
 
 # add lockdown info
-pc = pd.read_excel('CN_Provinces/CN_Policy/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
+pc = pd.read_excel('CN_Provinces/CN_Policy-不用了/V4-Yuhang_Pan-CN_lockdown_data加官员信息.xlsx')
 cs20['locked_down'] = cs20.citycode.apply(lambda x: x/100 in list(pc.city_code2010))
 pc_need = pc[['daySinceFirstCase']]
 pc_need['citycode'] = pc.city_code2010.copy() * 100

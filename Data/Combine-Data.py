@@ -10,7 +10,7 @@ cv = pd.read_csv('Data/COVID-19/me-市级新冠数据V1.0.csv')
 
 # %% 给city virus info 加上 city code
 
-with open('Data/Geo_data_CN/省市对照表.json') as json_file:
+with open('Data/Geo_data_CN/省市对照表-old.json') as json_file:
 	code2name = json.load(json_file)
 name2code = {value : key for (key, value) in code2name.items()}
 names = list(name2code.keys())
@@ -45,7 +45,7 @@ for i in cv_no.index:
 				the_name = j
 		cv.loc[i, 'cityCode'] = name2code[the_name]
 
-cv_no = cv[cv.cityCode.isnull()]
+
 if True:
 	# cv.loc[1, 'cityCode'] = 532800
 	# cv.loc[117, 'cityCode'] = 522700
@@ -83,27 +83,48 @@ if True:
 	cv.loc[344, 'cityCode'] = 532900
 	# cv.loc[345, 'cityCode'] =
 
-	# SECOND ROUND __ 发现names_mo2code 竟然自己删除重复的lmao | syntax: cvindex, cityCode
-	change_list = [(11, )]
+	# SECOND ROUND __ 发现names_mo2code 竟然自己删除重复的lmao |
+	# syntax: cvindex, the 行政编码
+	change_list = [(11, 442000), (23, 430100), (26, 430600), (30, 430300), (32, 511600), (76, 360100), (81, 360800),
+	               (82, 610100), (88, 211300), (98, 421000), (113, 220200),(119, 620400),
+	               (122, 422800), (134, 469028), (135, 211200), (140, 532500), (142, 622900), (152, 650100),
+	               (157, 130800), (160, 410700), (164, 430400), (166, 430500), (169, 340200), (173, 140200),
+	               (182, 533100), (193, 320800), (199, 513300), (203, 410500), (207, 433100), (212, 341000),
+	               (236, 512000), (240, 130500), (267, 211000), (279, 410900), (289, 220500), (321, 532300)]
+	for pair in change_list:
+		cv.loc[pair[0], 'cityCode'] = pair[1]
+cv_no = cv[cv.cityCode.isnull()]
 # %% Further Debug
 cv = cv[~cv.cityCode.isnull()]
 cv['cityCode'] = cv.cityCode.apply(int)
+cv['cityFullName'] = cv.cityCode.apply(lambda x: code2name[str(x)])
+cv = cv[cv.columns.tolist()[-2:] + cv.columns.tolist()[:-2]]
 # cv['cityCode'] = cv['cityCode'] // 100 * 100
 # cv[cv.cityName == '朝阳']
-
-
 # cv['cityFullName'] = cv.cityCode.apply(lambda x: code2name[str(x)])
 # cv['error']
+# cv[cv.cityCode % 100 == 0].shape
+
+
 
 # %% combine 省委书记 + 城市疫情
-cscv = pd.merge(cs, cv, left_on='citycode', right_on='cityCode')
-cscv.shape
+cscv = pd.merge(cs, cv, how='left',left_on='ctnm', right_on='cityFullName')
 
-# %% Debug
-errors = []
-for i in range(cs.shape[0]): # cs.citycode
-	if cs.iloc[i].citycode not in list(cscv.citycode):
-		errors.append(i)
+fsj = ['沈阳', '大连', '长春', '哈尔滨','南京','杭州', '济南', '青岛', '宁波',
+             '厦门','武汉','成都','西安','广州','深圳']
+cscv['sub_prov_ct'] = 0
+for i in fsj:
+	cscv.loc[cscv.cityName == i, 'sub_prov_ct'] = 1
+
+"""
+直辖市到时候和省级单位一起算吧"""
+# zxs = ['北京', '天津', '重庆', '上海']
+# cscv['direct_control_ct'] = 0
+# for i in zxs:
+# 	cscv.loc[cscv.cityName == i, 'sub_prov_ct'] = 1
+#
+# cscv.direct_control_ct.sum()
+
+cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
 
 
-cs.iloc[errors[2]]

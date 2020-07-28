@@ -6,7 +6,7 @@ import json
 from tqdm import tqdm
 
 
-with open('CN_Provinces/省市对照表.json') as json_file:
+with open('CN_Provinces/省市对照表-old.json') as json_file:
     code2city = json.load(json_file)
 city2code = dict(map(reversed, code2city.items()))
 
@@ -28,7 +28,7 @@ cn = gpd.read_file('CN_Provinces/Geo_data_CN/全国.json')
 dates = [str(i) for i in range(20200123, 20200132)] + \
 	[str(i) for i in range(20200201, 20200214)]
 
-policy = pd.read_excel('CN_Provinces/CN_Policy/V2-Yuhang_Pan-CN_lockdown_data.xlsx')
+policy = pd.read_excel('CN_Provinces/CN_Policy-不用了/V2-Yuhang_Pan-CN_lockdown_data.xlsx')
 
 # %% create date columns in map to show policy situation
 

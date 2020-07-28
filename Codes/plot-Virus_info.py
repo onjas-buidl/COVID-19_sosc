@@ -100,7 +100,7 @@ def first_case_date(dict_memory):
     return 'No_case'
 
 # %% prepare data for Plot lockdown timeline
-pc = pd.read_excel('CN_Provinces/CN_Policy/V2-Yuhang_Pan-CN_lockdown_data.xlsx')
+pc = pd.read_excel('CN_Provinces/CN_Policy-不用了/V2-Yuhang_Pan-CN_lockdown_data.xlsx')
 # add two columns to this policy data -- one showing time since Wuhan lockdown, the other show
 # time since first case
 pc.rename(columns={'new_start': 'lockdown'}, inplace=True)
@@ -133,7 +133,7 @@ pc.at[15, 'daySinceFirstCase'] = -20 # 山东东营好像没有病例 -- 直接�
 pc.at[38, 'daySinceFirstCase'] = -20 # 辽宁抚顺好像没有病例 -- 直接算成 2.15
 pc.at[94, 'daySinceFirstCase'] = -20 # 内蒙古阿拉善盟好像没有病例 -- 算成 2.15
 
-pc.to_excel('CN_Provinces/CN_Policy/V3-Yuhang_Pan-CN_lockdown_data.xlsx')
+pc.to_excel('CN_Provinces/CN_Policy-不用了/V3-Yuhang_Pan-CN_lockdown_data.xlsx')
 
 # %% simple plot
 plt.scatter(x=list(pc.daySinceFirstCase), y=list(pc.daySinceWuhanLock))

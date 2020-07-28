@@ -1,5 +1,6 @@
-# %%
-
+"""
+没事了！！！民政部行政区划代码和邮编 不是一个东西！！！！
+"""
 
 with open('Data/Geo_data_CN/民政部2020年5月中华人民共和国县以上行政区划代码') as file:
 	lines = file.readlines()
