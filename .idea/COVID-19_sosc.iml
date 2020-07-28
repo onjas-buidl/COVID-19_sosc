@@ -5,7 +5,6 @@
       <excludeFolder url="file://$MODULE_DIR$/Global/Gov_data" />
       <excludeFolder url="file://$MODULE_DIR$/Global/other_data" />
       <excludeFolder url="file://$MODULE_DIR$/Other" />
-      <excludeFolder url="file://$MODULE_DIR$/Reference" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.6" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

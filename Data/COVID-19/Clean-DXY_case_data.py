@@ -8,8 +8,6 @@ import json
 import matplotlib
 from tqdm import tqdm
 
-
-
 dates = ['2020-01-'+str(i) for i in range(24, 32)] + \
         ['2020-02-0'+str(i) for i in range(1, 10)] + ['2020-02-'+str(i) for i in range(10, 30)]
 
@@ -105,7 +103,9 @@ for ct in tqdm(df_city.cityName.unique()):
 
 city_agg_df = pd.DataFrame(city_agg_df)
 city_agg_df.replace(-1, np.nan, inplace=True)
-city_agg_df.to_csv('Data/COVID-19/me-市级新冠数据V1.0.csv')
+city_agg_df = city_agg_df[city_agg_df.columns.to_list()[-2:] + city_agg_df.columns.to_list()[:-2]]
+# city_agg_df.to_excel('Data/COVID-19/me-市级新冠数据V1.0.xlsx', index=False)
+city_agg_df.to_csv('Data/COVID-19/me-市级新冠数据V1.0.csv',encoding='utf-8_sig',index=False)
 df_prov = df_prov[~df_prov.provinceName.str.contains('待明确地区', '澳门')]
 df_prov = df_prov[~df_prov.provinceName.str.contains('台湾', '香港')]
 
@@ -128,4 +128,7 @@ for p in tqdm(df_prov.provinceName.unique()):
 
 prov_agg_df = pd.DataFrame(prov_agg_df)
 prov_agg_df.replace(-1, np.nan, inplace=True)
-prov_agg_df.to_csv('Data/COVID-19/me-省级新冠数据V1.0.csv')
+prov_agg_df = prov_agg_df[prov_agg_df.columns.to_list()[-2:] + prov_agg_df.columns.to_list()[:-2]]
+# prov_agg_df.to_excel('Data/COVID-19/me-省级新冠数据V1.0.xlsx', index=False)
+prov_agg_df.to_csv('Data/COVID-19/me-省级新冠数据V1.0.csv', encoding='utf-8_sig',index=False)
+
