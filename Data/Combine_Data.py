@@ -5,8 +5,8 @@ import json
 import matplotlib
 from tqdm import tqdm
 
-cs = pd.read_excel('Data/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
-cv = pd.read_csv('Data/COVID-19/me-市级新冠数据V1.0.csv')
+cs = pd.read_excel('Data/市领导数据/疫情-20市委书记-331ct-V3.xlsx')
+cv = pd.read_csv('Data/COVID-19/me-市级新冠数据V1.1.csv')
 
 # %% 给city virus info 加上 city code
 
@@ -99,11 +99,6 @@ cv = cv[~cv.cityCode.isnull()]
 cv['cityCode'] = cv.cityCode.apply(int)
 cv['cityFullName'] = cv.cityCode.apply(lambda x: code2name[str(x)])
 cv = cv[cv.columns.tolist()[-2:] + cv.columns.tolist()[:-2]]
-# cv['cityCode'] = cv['cityCode'] // 100 * 100
-# cv[cv.cityName == '朝阳']
-# cv['cityFullName'] = cv.cityCode.apply(lambda x: code2name[str(x)])
-# cv['error']
-# cv[cv.cityCode % 100 == 0].shape
 
 
 
@@ -116,15 +111,35 @@ cscv['sub_prov_ct'] = 0
 for i in fsj:
 	cscv.loc[cscv.cityName == i, 'sub_prov_ct'] = 1
 
-"""
-直辖市到时候和省级单位一起算吧"""
-# zxs = ['北京', '天津', '重庆', '上海']
-# cscv['direct_control_ct'] = 0
-# for i in zxs:
-# 	cscv.loc[cscv.cityName == i, 'sub_prov_ct'] = 1
-#
-# cscv.direct_control_ct.sum()
 
-cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
+# %% cscv COVID data cleaning
 
+dates = ['2020-01-'+str(i) for i in range(24, 32)] + \
+        ['2020-02-0'+str(i) for i in range(1, 10)] + ['2020-02-'+str(i) for i in range(10, 30)]
 
+cscv.loc[cscv.ctnm=='松原市', '2020-01-26'] = 1
+cscv.loc[cscv.ctnm=='长春市', '2020-01-26'] = 1
+cscv.loc[cscv.ctnm=='呼伦贝尔市', '2020-01-26'] = 2
+cscv.loc[cscv.ctnm=='呼伦贝尔市', '2020-01-27'] = 2
+cscv.loc[cscv.ctnm=='西宁市', '2020-01-26'] = 4
+cscv.loc[cscv.ctnm=='鞍山市', '2020-02-02'] = 1
+cscv.loc[cscv.ctnm=='吉林市', '2020-01-26'] = 1
+
+for d in dates:
+	cscv[d] = cscv[d].replace(np.nan, 0)
+
+# %% GDP!!!
+
+gdp = pd.read_csv('Data/Geo_data_CN/GDP/tabula-gdp2018-clean.csv')
+cscv = pd.merge(cscv, gdp, left_on='ctnm', right_on='cityname', how='left')
+cscv['自治州-盟-地区'] = cscv.gdp2018.isnull()
+
+# a = cscv[['ctnm', 'gdp2018']]
+
+# %% 删掉多余变量
+cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
+           'cityFullName', 'prov', 'note'], axis=1, inplace=True)
+cscv.rename(columns={'provincename': 'prov'}, inplace=True)
+
+# cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
+cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP-V1.csv', index=False)
