@@ -28,14 +28,35 @@ for fix_date in dates:
         significance[fix_date] = res.f_pvalue
 
 # %% 城市GDP -- pure
-mod = sm.OLS(data.locked_on_date.apply(int), data[['gdp2018']])
+data_ = data[~data['自治州-盟-地区']]
+mod = sm.OLS(data_.locked_down.apply(int), data_[['gdp2018']])
 res = mod.fit()
-
+res.summary()
 
 # %% GDP + COVID + 副省级
-fix_date = '2020-02-07'
-mod = sm.OLS(data.locked_on_date.apply(int), data[[fix_date, 'sub_prov_ct']])
-res = mod.fit()
+fix_date = '2020-02-04'
+reg_results = []
+for fix_date in dates[10:]:
+        fix_datetime = pd.to_datetime(fix_date)
+        data['locked_on_date'] = data.lockdown_date.apply(lambda x: not(not(isinstance(x, str)) or pd.to_datetime(x) > fix_datetime))
+        data['case_on_date'] = data[fix_date]
+
+        data_ = data[~data['自治州-盟-地区']]
+
+        mod = sm.OLS(data_.locked_on_date.apply(int), data_[['case_on_date', 'gdp2018', 'sub_prov_ct', 'age_feb20', 'tenure']])
+        res = mod.fit()
+
+        res_dict = dict(res.params)
+        for k in res_dict.keys():
+                if res.pvalues['gdp2018']
+        reg_results.append()
+        significance
+reg_results = pd.DataFrame(reg_results)
+
+# np.corrcoef(data_[fix_date], data_['gdp2018'])
+
+
+
 
 
 
