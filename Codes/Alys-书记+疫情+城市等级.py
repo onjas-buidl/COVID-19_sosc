@@ -32,6 +32,11 @@ data_ = data[~data['自治州-盟-地区']]
 mod = sm.OLS(data_.locked_down.apply(int), data_[['gdp2018']])
 res = mod.fit()
 res.summary()
+# %% 副省级 pure
+data_ = data
+mod = sm.OLS(data_.locked_down.apply(int), data_[['sub_prov_ct']])
+res = mod.fit()
+res.summary()
 
 # %% GDP + COVID + 副省级
 fix_date = '2020-02-04'
@@ -47,12 +52,14 @@ for fix_date in dates[10:]:
         res = mod.fit()
 
         res_dict = dict(res.params)
-        for k in res_dict.keys():
-                if res.pvalues['gdp2018']
-        reg_results.append()
-        significance
-reg_results = pd.DataFrame(reg_results)
+        # for k in res_dict.keys():
+        #         if res.pvalues[k] > 0.05:
+        #                 res_dict[k] = 0
+        reg_results.append(res_dict)
 
+
+reg_results = pd.DataFrame(reg_results)
+reg_results.index = dates[10:]
 # np.corrcoef(data_[fix_date], data_['gdp2018'])
 
 
