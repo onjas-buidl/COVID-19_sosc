@@ -130,11 +130,21 @@ for d in dates:
 
 # %% GDP!!!
 
-gdp = pd.read_csv('Data/Geo_data_CN/GDP/tabula-gdp2018-clean.csv')
+gdp = pd.read_csv('Data/城市数据/GDP/tabula-gdp2018-clean.csv')
 cscv = pd.merge(cscv, gdp, left_on='ctnm', right_on='cityname', how='left')
 cscv['自治州-盟-地区'] = cscv.gdp2018.isnull()
 
-# a = cscv[['ctnm', 'gdp2018']]
+# %% Population size
+pop = pd.read_excel('Data/城市数据/Population/pop2018.xlsx')[['popHR18_all', 'ctnm']]
+pop['Log_popHR18_all'] = pop['popHR18_all'].apply(np.log)
+
+cscv = pd.merge(cscv, pop, on='ctnm', how='left')
+
+# %% 产业
+ind = pd.read_excel('Data/城市数据/产业分布/2018城市GDP产业分布.xlsx')
+ind = ind.dropna()
+
+cscv = pd.merge(cscv, ind, on='ctnm', how='left')
 
 # %% 删掉多余变量
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
@@ -142,4 +152,6 @@ cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_c
 cscv.rename(columns={'provincename': 'prov'}, inplace=True)
 
 # cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
-cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP-V1.csv', index=False)
+cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构-V1.csv', index=False)
+
+
