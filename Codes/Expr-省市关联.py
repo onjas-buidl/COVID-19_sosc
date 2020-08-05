@@ -7,8 +7,10 @@ import statsmodels.formula.api as smf
 
 data = pd.read_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构+省一级响应-V1.csv')
 # %%
+res = smf.ols('locked_down ~ yiji_jan23 + yiji_jan24 + yiji_jan25', data=data).fit()
 res = smf.ols('locked_down ~ yiji_num', data=data).fit()
 res.summary()
 
+data[['locked_down', 'yiji_num']].groupby('yiji_num').mean()
 
 

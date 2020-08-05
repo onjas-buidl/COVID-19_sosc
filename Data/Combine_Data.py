@@ -148,19 +148,26 @@ cscv = pd.merge(cscv, ind, on='ctnm', how='left')
 
 # %% 省级一级响应
 prov_res = pd.read_excel('Data/CN_Policy-不用了/各省一级响应.xlsx')
-prov_res.set_index('prov_full', inplace=True)
-res_df = []
-for row in cscv.iterrows():
-	res_df.append({'yiji_jan23': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-23 00:00:00')),
-	               'yiji_jan24': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-24 00:00:00')),
-	               'yiji_jan25': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-25 00:00:00')),
-	               'yiji_jan26': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-26 00:00:00')),
-	               'ctnm': row[1]['ctnm']})
+# prov_res.set_index('prov_full', inplace=True)
 
-res_df = pd.DataFrame(res_df)
-res_df['yiji_num'] = res_df.yiji_jan24 + res_df.yiji_jan24*2
+cscv = pd.merge(cscv, prov_res[['prov_full', 'yiji_date']],
+         left_on='provincename', right_on='prov_full', how='left')
+cscv['yiji_jan23'] = (cscv.yiji_date == pd.Timestamp('2020-01-23 00:00:00')).apply(int)
+cscv['yiji_jan24'] = (cscv.yiji_date == pd.Timestamp('2020-01-24 00:00:00')).apply(int)
+cscv['yiji_jan25'] = (cscv.yiji_date == pd.Timestamp('2020-01-25 00:00:00')).apply(int)
+cscv['yiji_jan26'] = (cscv.yiji_date == pd.Timestamp('2020-01-26 00:00:00')).apply(int)
 
-cscv = pd.merge(cscv, res_df, on='ctnm', how='left')
+# res_df = []
+# cscv['yiji_date']
+# for row in cscv.iterrows():
+# 	res_df.append({'yiji_jan23': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-23 00:00:00')),
+# 	               'yiji_jan24': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-24 00:00:00')),
+# 	               'yiji_jan25': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-25 00:00:00')),
+# 	               'yiji_jan26': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-26 00:00:00')),
+# 	               'ctnm': row[1]['ctnm']})
+#
+# res_df = pd.DataFrame(res_df)
+cscv['yiji_num'] = cscv.yiji_jan24 + cscv.yiji_jan25*2 + cscv.yiji_jan26*3
 
 # %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
@@ -184,5 +191,13 @@ cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构
 # mod = sm.OLS(a.b, a.a)
 # res = mod.fit()
 # res.summary()
+
+
+
+
+
+
+
+
 
 

@@ -1,10 +1,7 @@
 import pandas as pd
-import geopandas as gpd
 import matplotlib.pyplot as plt
-import requests
 import json
 from tqdm import tqdm
-import statsmodels.api as sm
 import seaborn as sns; sns.set(color_codes=True)
 
 
