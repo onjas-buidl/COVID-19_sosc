@@ -10,8 +10,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 from collections import Counter
-import statsmodels.api as sm
-
+# import statsmodels.api as sm
+import statsmodels.formula.api as smf
 
 # %% 把全部官员替换疫情中的官员，+ statistical check
 cs20 = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
@@ -80,17 +80,19 @@ cs20 = cs20[cols]
 
 # %% Regression: how does one extra age contribute to lkd choice
 
-cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
+cs = pd.read_excel('Data/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
 cs = cs[cs.provincecode != 420000]  # 只看非湖北的
 # 再把辽宁、江西、内蒙古给排除了
-# cs20 = cs20[cs20.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
-cs = cs[cs.age_feb20 >= 56]
+cs = cs[cs.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
+cs = cs[cs.age_feb20 >= 55]
+cs['locked_down'] = cs.locked_down.apply(int)
 
-mod = sm.OLS(cs.locked_down.apply(int), cs.age_feb20 )
-res = mod.fit()
-print(res.summary())
+# mod = sm.OLS(cs.locked_down.apply(int), cs.age_feb20 )
+# res = mod.fit()
+# print(res.summary())
 
+res = smf.ols('locked_down ~ age_feb20', data=cs).fit()
+res.summary()
 
-
-
-
+import seaborn as sns
+sns.regplot(y='locked_down', x='age_feb20', data=cs); plt.show()

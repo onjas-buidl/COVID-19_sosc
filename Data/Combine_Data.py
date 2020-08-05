@@ -140,18 +140,49 @@ pop['Log_popHR18_all'] = pop['popHR18_all'].apply(np.log)
 
 cscv = pd.merge(cscv, pop, on='ctnm', how='left')
 
-# %% 产业
+# %% GDP产业
 ind = pd.read_excel('Data/城市数据/产业分布/2018城市GDP产业分布.xlsx')
 ind = ind.dropna()
 
 cscv = pd.merge(cscv, ind, on='ctnm', how='left')
 
-# %% 删掉多余变量
+# %% 省级一级响应
+prov_res = pd.read_excel('Data/CN_Policy-不用了/各省一级响应.xlsx')
+prov_res.set_index('prov_full', inplace=True)
+res_df = []
+for row in cscv.iterrows():
+	res_df.append({'yiji_jan23': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-23 00:00:00')),
+	               'yiji_jan24': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-24 00:00:00')),
+	               'yiji_jan25': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-25 00:00:00')),
+	               'yiji_jan26': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-26 00:00:00')),
+	               'ctnm': row[1]['ctnm']})
+
+res_df = pd.DataFrame(res_df)
+res_df['yiji_num'] = res_df.yiji_jan24 + res_df.yiji_jan24*2
+
+cscv = pd.merge(cscv, res_df, on='ctnm', how='left')
+
+# %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
            'cityFullName', 'prov', 'note'], axis=1, inplace=True)
 cscv.rename(columns={'provincename': 'prov'}, inplace=True)
+cscv['locked_down'] = cscv.locked_down.apply(int)
 
 # cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
-cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构-V1.csv', index=False)
+cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构+省一级响应-V1.csv', index=False)
+
+
+# # %% sanity check
+# import random
+# import statsmodels.api as sm
+# import seaborn as sns; sns.set(color_codes=True)
+#
+#
+# k = [i for i in range(1000)]
+# a = pd.DataFrame({'a': k, 'b': [2*i + 1 + random.random() for i in k]})
+# a.to_stata('test.dta')
+# mod = sm.OLS(a.b, a.a)
+# res = mod.fit()
+# res.summary()
 
 

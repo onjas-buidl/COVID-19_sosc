@@ -4,7 +4,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 from collections import Counter
-import statsmodels.api as sm
+# import statsmodels.api as sm
+import statsmodels.formula.api as smf
 
 # %% basic plot
 cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
@@ -44,17 +45,18 @@ plt.close(fig='all')
 
 # %% Causal analysis with OLS
 
-cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
+cs = pd.read_excel('Data/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
 cs = cs[cs.provincecode != 420000]  # 只看非湖北的
+cs['locked_down'] = cs.locked_down.apply(int)
 # 再把辽宁、江西、内蒙古给排除了
 # cs = cs[cs.provincecode.apply(lambda code: code not in [210000, 360000, 150000])]
 
-cs = cs[cs.tenure <= 5]
+cs = cs[cs.tenure >= 5]
 # cs = cs[(cs.tenure <= 4) & (cs.tenure >= 3)]
 
-# mod = sm.OLS(cs.locked_down.apply(int), cs.tenure)
-mod = sm.OLS(cs.locked_down.apply(int), cs[['tenure', 'age_feb20']])
-res = mod.fit()
-print(res.summary())
+res = smf.ols('locked_down ~ tenure', data=cs).fit()
+# mod = sm.OLS(cs.locked_down.apply(int), cs[['tenure', 'age_feb20']])
+# res = mod.fit()
+res.summary()
 
-
+cs[['locked_down', 'tenure']].to_stata('Data/test.dta')
