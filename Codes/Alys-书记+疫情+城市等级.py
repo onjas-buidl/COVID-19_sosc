@@ -77,12 +77,12 @@ for fix_date in dates[10:]:
 	data['case_on_date'] = data[fix_date]
 	data['case_per_10k'] = data['case_on_date'] / data['popHR18_all']
 	data_ = data[~data['自治州-盟-地区']]
-	# results = smf.ols('locked_on_date ~ case_on_date + gdp2018 +' +
-	#         'Log_popHR18_all + second_ind + third_ind + ' +
-	#         'sub_prov_ct + age_feb20 + tenure', data=data_).fit()
-	results = smf.ols('locked_on_date ~ case_per_10k + gdp2018 +' +
-	                  ' second_ind + third_ind + ' +
-	                  'sub_prov_ct + age_feb20 + tenure', data=data_).fit()
+	results = smf.ols('locked_on_date ~ case_on_date + gdp2018 +' +
+	        'Log_popHR18_all + second_ind + third_ind + ' +
+	        'sub_prov_ct + age_feb20 + tenure', data=data_).fit()
+	# results = smf.ols('locked_on_date ~ case_per_10k + gdp2018 +' +
+	#                   ' second_ind + third_ind + ' +
+	#                   'sub_prov_ct + age_feb20 + tenure', data=data_).fit()
 	# results.summary()
 	# res = mod.fit()
 
