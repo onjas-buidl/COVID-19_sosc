@@ -117,13 +117,13 @@ for i in fsj:
 dates = ['2020-01-'+str(i) for i in range(24, 32)] + \
         ['2020-02-0'+str(i) for i in range(1, 10)] + ['2020-02-'+str(i) for i in range(10, 30)]
 
-cscv.loc[cscv.ctnm=='松原市', '2020-01-26'] = 1
-cscv.loc[cscv.ctnm=='长春市', '2020-01-26'] = 1
-cscv.loc[cscv.ctnm=='呼伦贝尔市', '2020-01-26'] = 2
-cscv.loc[cscv.ctnm=='呼伦贝尔市', '2020-01-27'] = 2
-cscv.loc[cscv.ctnm=='西宁市', '2020-01-26'] = 4
-cscv.loc[cscv.ctnm=='鞍山市', '2020-02-02'] = 1
-cscv.loc[cscv.ctnm=='吉林市', '2020-01-26'] = 1
+cscv.loc[cscv.ctnm == '松原市', '2020-01-26'] = 1
+cscv.loc[cscv.ctnm == '长春市', '2020-01-26'] = 1
+cscv.loc[cscv.ctnm == '呼伦贝尔市', '2020-01-26'] = 2
+cscv.loc[cscv.ctnm == '呼伦贝尔市', '2020-01-27'] = 2
+cscv.loc[cscv.ctnm == '西宁市', '2020-01-26'] = 4
+cscv.loc[cscv.ctnm == '鞍山市', '2020-02-02'] = 1
+cscv.loc[cscv.ctnm == '吉林市', '2020-01-26'] = 1
 
 for d in dates:
 	cscv[d] = cscv[d].replace(np.nan, 0)
@@ -148,56 +148,31 @@ cscv = pd.merge(cscv, ind, on='ctnm', how='left')
 
 # %% 省级一级响应
 prov_res = pd.read_excel('Data/CN_Policy-不用了/各省一级响应.xlsx')
+prov_res['prov_short'] = prov_res.prov
 # prov_res.set_index('prov_full', inplace=True)
 
-cscv = pd.merge(cscv, prov_res[['prov_full', 'yiji_date']],
+cscv = pd.merge(cscv, prov_res[['prov_full', 'yiji_date', 'prov_short']],
          left_on='provincename', right_on='prov_full', how='left')
 cscv['yiji_jan23'] = (cscv.yiji_date == pd.Timestamp('2020-01-23 00:00:00')).apply(int)
 cscv['yiji_jan24'] = (cscv.yiji_date == pd.Timestamp('2020-01-24 00:00:00')).apply(int)
 cscv['yiji_jan25'] = (cscv.yiji_date == pd.Timestamp('2020-01-25 00:00:00')).apply(int)
 cscv['yiji_jan26'] = (cscv.yiji_date == pd.Timestamp('2020-01-26 00:00:00')).apply(int)
 
-# res_df = []
-# cscv['yiji_date']
-# for row in cscv.iterrows():
-# 	res_df.append({'yiji_jan23': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-23 00:00:00')),
-# 	               'yiji_jan24': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-24 00:00:00')),
-# 	               'yiji_jan25': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-25 00:00:00')),
-# 	               'yiji_jan26': int(prov_res.loc[row[1]['provincename']]['yiji_date'] == pd.Timestamp('2020-01-26 00:00:00')),
-# 	               'ctnm': row[1]['ctnm']})
-#
-# res_df = pd.DataFrame(res_df)
 cscv['yiji_num'] = cscv.yiji_jan24 + cscv.yiji_jan25*2 + cscv.yiji_jan26*3
+
+# %% 省领导政治地位
+prov_lead = pd.read_excel('Data/城市数据/政治地位/省级领导政治地位.xlsx')
+prov_lead['prov_leader_rank'] = prov_lead['省委书记职位得分'].apply(lambda x: float(x.replace(' ', '')))
+cscv = pd.merge(cscv, prov_lead[['prov_leader_rank', 'prov_short']], on='prov_short', how='left')
+
 
 # %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
            'cityFullName', 'prov', 'note'], axis=1, inplace=True)
 cscv.rename(columns={'provincename': 'prov'}, inplace=True)
 cscv['locked_down'] = cscv.locked_down.apply(int)
-
 # cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
-cscv.to_csv('Data/每日确诊+市委书记信息+副省级+GDP+pop+产业结构+省一级响应-V1.csv', index=False)
-
-
-# # %% sanity check
-# import random
-# import statsmodels.api as sm
-# import seaborn as sns; sns.set(color_codes=True)
-#
-#
-# k = [i for i in range(1000)]
-# a = pd.DataFrame({'a': k, 'b': [2*i + 1 + random.random() for i in k]})
-# a.to_stata('test.dta')
-# mod = sm.OLS(a.b, a.a)
-# res = mod.fit()
-# res.summary()
-
-
-
-
-
-
-
+cscv.to_csv('Data/所有信息汇总-V1.csv', index=False)
 
 
 
