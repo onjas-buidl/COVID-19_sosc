@@ -166,6 +166,19 @@ prov_lead['prov_leader_rank'] = prov_lead['省委书记职位得分'].apply(lamb
 cscv = pd.merge(cscv, prov_lead[['prov_leader_rank', 'prov_short']], on='prov_short', how='left')
 
 
+# %% 城市医疗信息
+ct_list = list(cscv[~cscv['自治州-盟-地区']].ctnm)
+med = pd.read_excel('Data/城市数据/医疗/18年鉴-医疗.xlsx')
+med['ctnm'] = med.ctnm.apply(lambda x: x.replace(' ', ''))
+
+# 在 ct_list 中全齐的只有：num_hospital_total, num_doctors_total
+med = med[['ctnm', 'num_hospital_total', 'num_doctors_total']]
+med = med[~med.num_hospital_total.isnull()]
+
+cscv = pd.merge(cscv, med, on='ctnm', how='left')
+
+
+
 # %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
            'cityFullName', 'prov', 'note'], axis=1, inplace=True)

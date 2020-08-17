@@ -47,11 +47,3 @@ reg_results = pd.DataFrame(reg_results)
 reg_results.index = dates[10:]
 reg_results.to_csv('/Users/qitianhu/Desktop/reg_results.csv')
 
-
-# %% variable-wise regression
-sns.regplot(x='third_ind', y='gdp2018', data=data) ; plt.show()
-
-
-
-
-

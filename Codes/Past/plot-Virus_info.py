@@ -72,7 +72,7 @@ def get_city_info_dict(prov_name='河北省',
     dict_memory = {i: -1 for i in dates}
     if prov_name[-1:] != '市':
         for d in dates:
-            with open('COVID-19/DXY-CN-by_city/' + d + '.json') as json_file:
+            with open('Data/COVID-19/DXY-CN-by_city/' + d + '.json') as json_file:
                 day = json.load(json_file)
             for p in day:
                 if p['provinceName'] == prov_name:
@@ -82,7 +82,7 @@ def get_city_info_dict(prov_name='河北省',
                             dict_memory[d] = city[search_type]
     else:
         for d in dates:
-            with open('COVID-19/DXY-CN-by_city/' + d + '.json') as json_file:
+            with open('Data/COVID-19/DXY-CN-by_city/' + d + '.json') as json_file:
                 day = json.load(json_file)
             for p in day:
                 if p['provinceName'] == prov_name:
@@ -91,7 +91,7 @@ def get_city_info_dict(prov_name='河北省',
     return dict_memory
 
 # dict_memory
-get_city_info_dict(prov_name='上海市', ct_name='保定', search_type='confirmedCount')
+a = get_city_info_dict(prov_name='上海市', ct_name='保定', search_type='confirmedCount')
 
 def first_case_date(dict_memory):
     for k in dict_memory.keys():
