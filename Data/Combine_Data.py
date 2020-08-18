@@ -178,6 +178,41 @@ med = med[~med.num_hospital_total.isnull()]
 cscv = pd.merge(cscv, med, on='ctnm', how='left')
 
 
+# %% 城市企业数量
+firms = pd.read_excel('Data/城市数据/企业/18企业数量.xlsx')
+# ctnm correction
+firms.loc[150, 'ctnm'] = '日照市'
+firms = firms[firms.ctnm.isin(ct_list)]
+
+firms['num_firm_total'] = firms['num_firm_total'].apply(lambda x: np.nan if pd.isnull(x) else np.int(x))
+firms['num_domestic_firm_total'] = firms['num_domestic_firm_total'].apply(lambda x: np.nan if pd.isnull(x) else np.int(str(x).replace(' ', '')))
+
+firms['num_non-domestic_firms_total'] = firms.num_firm_total - firms.num_domestic_firm_total
+firms[firms['num_non-domestic_firms_total'].isnull()]
+
+
+# firms['pct'] = firms['num_non-domestic_firms_total'] / firms['num_firm_total']
+# firms['pct'].hist(bins=50)
+
+firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total']]
+
+cscv = pd.merge(cscv, firms, on='ctnm', how='left')
+
+# %% 添加市委书记教育背景
+sj = pd.read_excel('Data/市领导数据/戴敏-new/市委书记.xlsx')
+sj = sj[sj.year == 2018]
+sj = sj[['name', 'sex', 'bmymager', 'nativeplace', 'birthplace', 'partytime',
+         'education', 'majorchara', 'edu']]
+
+cscv.name.isin(sj.name).sum()
+
+
+# %% check
+cscv[cscv.ctnm.isin(ct_list)][['popHR18_all',
+       'Log_popHR18_all', 'primary_ind', 'second_ind', 'third_ind',
+       'prov_full', 'yiji_date', 'prov_short', 'yiji_jan23', 'yiji_jan24',
+       'yiji_jan25', 'yiji_jan26', 'yiji_num', 'prov_leader_rank',
+       'num_hospital_total', 'num_doctors_total']].isna().sum()
 
 # %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
