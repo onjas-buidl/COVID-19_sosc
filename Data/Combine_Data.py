@@ -174,8 +174,11 @@ med['ctnm'] = med.ctnm.apply(lambda x: x.replace(' ', ''))
 # 在 ct_list 中全齐的只有：num_hospital_total, num_doctors_total
 med = med[['ctnm', 'num_hospital_total', 'num_doctors_total']]
 med = med[~med.num_hospital_total.isnull()]
+med['num_hospital_total'] = med['num_hospital_total'].apply(lambda x: int(float(str(x).replace(' ', ''))))
+med['num_doctors_total'] = med['num_doctors_total'].apply(lambda x: int(float(str(x).replace(' ', ''))))
 
 cscv = pd.merge(cscv, med, on='ctnm', how='left')
+
 
 
 # %% 城市企业数量
@@ -189,42 +192,41 @@ firms['num_domestic_firm_total'] = firms['num_domestic_firm_total'].apply(lambda
 
 firms['num_non-domestic_firms_total'] = firms.num_firm_total - firms.num_domestic_firm_total
 firms[firms['num_non-domestic_firms_total'].isnull()]
+firms['pct_of_non_domestic_firm'] = (firms['num_non-domestic_firms_total'] / firms['num_firm_total'])*100
 
-
-# firms['pct'] = firms['num_non-domestic_firms_total'] / firms['num_firm_total']
-# firms['pct'].hist(bins=50)
-
-firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total']]
+firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total', 'pct_of_non_domestic_firm']]
 
 cscv = pd.merge(cscv, firms, on='ctnm', how='left')
 
-# %% 添加市委书记教育背景
+# %% 添加市委书记具体信息
+data = pd.read_csv('Data/Aggregate_Data/所有信息汇总-V1.csv')
+prov_list = list(data.prov_short.unique())
+prov_list += ['北京', '上海', '天津', '重庆']
+
+def prov_short_name(full):
+	for i in prov_list:
+		if i in full:
+			return i
+	return np.nan
+
 cs = pd.read_csv('Data/市领导数据/291市委书记-二次爬详细个人信息.csv')
+cs['nativeprov'] = cs.nativeplace.apply(prov_short_name)
+cs['is_STEM_major'] = (cs.majorchara == 2).apply(int)
 
 cscv = pd.merge(cscv, cs, on='name', how='left')
 cscv['rule_in_native_prov'] = cscv.prov_short == cscv.nativeprov
-cscv['BA?'] = cscv.edu == 16
-cscv['MA?'] = cscv.edu == 19
-cscv['PhD?'] = cscv.edu == 22
+cscv['is_BA'] = (cscv.edu == 16).apply(int)
+cscv['is_MA'] = (cscv.edu == 19).apply(int)
+cscv['is_PhD'] = (cscv.edu == 22).apply(int)
 cscv['partytime'] = cscv['partytime'].apply(pd.to_datetime)
 cscv['firstjobtime'] = cscv['firstjobtime'].apply(pd.to_datetime)
-
 cscv['party_age'] = (pd.to_datetime('2020-02-01') - cscv['partytime']).astype('<m8[Y]')
 cscv['work_age'] = (pd.to_datetime('2020-02-01') - cscv['firstjobtime']).astype('<m8[Y]')
 # cs['age'] = (pd.to_datetime('2018-02-01') - cs['birthmonth']).astype('<m8[Y]')
 # cscv.columns
-
-
-# 简单看党龄和工作年龄的关系
-plt.scatter(cscv['party_age'], cscv['work_age'])
-plt.show()
+cscv['is_female'] = (cscv.sex == '女').apply(int)
 
 # %% check
-# cscv[cscv.ctnm.isin(ct_list)][['popHR18_all',
-#        'Log_popHR18_all', 'primary_ind', 'second_ind', 'third_ind',
-#        'prov_full', 'yiji_date', 'prov_short', 'yiji_jan23', 'yiji_jan24',
-#        'yiji_jan25', 'yiji_jan26', 'yiji_num', 'prov_leader_rank',
-#        'num_hospital_total', 'num_doctors_total']].isna().sum()
 
 a = cscv[~cscv['自治州-盟-地区']].isnull().sum()
 

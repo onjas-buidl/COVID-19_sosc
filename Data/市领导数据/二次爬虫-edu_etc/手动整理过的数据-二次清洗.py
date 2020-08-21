@@ -59,17 +59,8 @@ for p in to_fill_firstjobtime.iterrows():
 	cs.loc[cs.name == p['name'], 'firstjobtime'] = estimate_firstjobtime
 
 # %% nativeplace 整理
-data = pd.read_csv('Data/所有信息汇总-V1.csv')
-prov_list = list(data.prov_short.unique())
-prov_list += ['北京', '上海', '天津', '重庆']
 
-def prov_short_name(full):
-	for i in prov_list:
-		if i in full:
-			return i
-	return np.nan
 
-cs['nativeprov'] = cs.nativeplace.apply(prov_short_name)
-cs['STEM_major?'] = cs.majorchara == 2
-cs.drop(['ctnm', 'birthmonth', 'sex', 'majorchara'], axis=1, inplace=True)
+
+cs.drop(['ctnm', 'birthmonth'], axis=1, inplace=True)
 cs.to_csv('Data/市领导数据/291市委书记-二次爬详细个人信息.csv', index=False)
