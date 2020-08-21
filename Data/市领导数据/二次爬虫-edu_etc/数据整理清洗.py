@@ -66,35 +66,10 @@ df_list = []
 error_list = []
 save_dict = {}
 raw_dict = {}
-# %% just get wiki pages
-todo_df = data[data['missing_need_var']].copy()
-for i in tqdm(range(todo_df.shape[0])):
-	cs_name = todo_df.name.iloc[i]
-	ct_name = todo_df.ctnm.iloc[i]
-	url = 'https://zh.wikipedia.org/wiki/' + cs_name
-	response = requests.get(url)
 
-	if response.status_code == 200:
-		soup = BeautifulSoup(response.content, "html.parser")
-		page = ''
-		for p in soup.select('p'):
-			page += p.text
-		page = zhconv.convert(page, 'zh-cn')
-		raw_dict[cs_name] = page
-	else:
-		print('error', ct_name, cs_name)
-		error_list.append(cs_name)
-		continue
-
-scraped_df = pd.DataFrame(df_list)
-
-# %% 存一下
-with open('Data/市领导数据/二次爬虫-edu_etc/raw_dict_save', 'wb') as file:
-	pickle.dump(raw_dict, file)
-
-# %% load and add 人民网 pages
+# %% load and add 人民网 pages to todo_df
 error_list = []
-todo_df = data[data['missing_need_var']].copy()
+todo_df = data.copy()
 files = [i for i in os.walk('Data/市领导数据/人民网地方政府资料库front/')][0][2]
 
 for i in tqdm(range(todo_df.shape[0])):
@@ -170,7 +145,3 @@ todo_df['baidu'] = 'https://baike.baidu.com/item/' + todo_df.name
 # df_list['nativeplace'] = df_list.nativeplace.apply(lambda x: x[0][:-1])
 todo_df.to_excel('Data/市领导数据/二次爬虫-edu_etc/全291人信息整理.xlsx', index=False)
 
-
-# %%
-
-a = pd.read_excel('Data/市领导数据/二次爬虫-edu_etc/爬到75人信息整理.xlsx', index=False)
