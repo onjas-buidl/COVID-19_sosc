@@ -145,3 +145,33 @@ todo_df['baidu'] = 'https://baike.baidu.com/item/' + todo_df.name
 # df_list['nativeplace'] = df_list.nativeplace.apply(lambda x: x[0][:-1])
 todo_df.to_excel('Data/市领导数据/二次爬虫-edu_etc/全291人信息整理.xlsx', index=False)
 
+
+
+# %% 找人的简历
+cs_name = '庞庆波'
+ct_name = '白城'
+
+for file_name in files:
+	with open('Data/市领导数据/人民网地方政府资料库front/' + file_name, encoding='GBK') as f:
+		contents = f.read()
+	if all([i in contents for i in [cs_name, cs_city]]):
+		soup = BeautifulSoup(contents, 'html.parser')
+		page_all = soup.select('.box01')
+		print(111)
+		break
+page = ''
+for p in page_all:
+	page += p.text
+page = page.replace('\n', '').replace('\t', '').replace('\u3000', '').replace(' ', '')
+phrases = re.split('，|。|；', page)
+
+for m in match_list:
+	if not pd.isnull(todo_df.loc[todo_df.ctnm == ct_name, m[0]]).iloc[0]:
+		continue
+	l = []
+	for p in phrases:
+		if any([(w in p) for w in m[1]]):
+			l.append(p)
+	# todo_df.loc[todo_df.ctnm == ct_name, m[0]] = str(l).replace('\',\'', ' ').replace('[', '').replace(']', '')
+	# print(ct_name, 'added', end='-')
+print(l)
