@@ -199,28 +199,43 @@ firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total']]
 cscv = pd.merge(cscv, firms, on='ctnm', how='left')
 
 # %% 添加市委书记教育背景
-sj = pd.read_excel('Data/市领导数据/戴敏-new/市委书记.xlsx')
-sj = sj[sj.year == 2018]
-sj = sj[['name', 'sex', 'bmymager', 'nativeplace', 'birthplace', 'partytime',
-         'education', 'majorchara', 'edu']]
+cs = pd.read_csv('Data/市领导数据/291市委书记-二次爬详细个人信息.csv')
 
-cscv.name.isin(sj.name).sum()
+cscv = pd.merge(cscv, cs, on='name', how='left')
+cscv['rule_in_native_prov'] = cscv.prov_short == cscv.nativeprov
+cscv['BA?'] = cscv.edu == 16
+cscv['MA?'] = cscv.edu == 19
+cscv['PhD?'] = cscv.edu == 22
+cscv['partytime'] = cscv['partytime'].apply(pd.to_datetime)
+cscv['firstjobtime'] = cscv['firstjobtime'].apply(pd.to_datetime)
 
+cscv['party_age'] = (pd.to_datetime('2020-02-01') - cscv['partytime']).astype('<m8[Y]')
+cscv['work_age'] = (pd.to_datetime('2020-02-01') - cscv['firstjobtime']).astype('<m8[Y]')
+# cs['age'] = (pd.to_datetime('2018-02-01') - cs['birthmonth']).astype('<m8[Y]')
+# cscv.columns
+
+
+# 简单看党龄和工作年龄的关系
+plt.scatter(cscv['party_age'], cscv['work_age'])
+plt.show()
 
 # %% check
-cscv[cscv.ctnm.isin(ct_list)][['popHR18_all',
-       'Log_popHR18_all', 'primary_ind', 'second_ind', 'third_ind',
-       'prov_full', 'yiji_date', 'prov_short', 'yiji_jan23', 'yiji_jan24',
-       'yiji_jan25', 'yiji_jan26', 'yiji_num', 'prov_leader_rank',
-       'num_hospital_total', 'num_doctors_total']].isna().sum()
+# cscv[cscv.ctnm.isin(ct_list)][['popHR18_all',
+#        'Log_popHR18_all', 'primary_ind', 'second_ind', 'third_ind',
+#        'prov_full', 'yiji_date', 'prov_short', 'yiji_jan23', 'yiji_jan24',
+#        'yiji_jan25', 'yiji_jan26', 'yiji_num', 'prov_leader_rank',
+#        'num_hospital_total', 'num_doctors_total']].isna().sum()
+
+a = cscv[~cscv['自治州-盟-地区']].isnull().sum()
+
 
 # %% 删掉多余变量 + Export
 cscv.drop(['provincecode', 'off_month', 'race', 'time_of_data_entry', 'rule_in_covid', 'cityCode', 'cityName',
-           'cityFullName', 'prov', 'note'], axis=1, inplace=True)
+           'cityFullName', 'prov', 'note', 'education', 'edu'], axis=1, inplace=True)
 cscv.rename(columns={'provincename': 'prov'}, inplace=True)
 cscv['locked_down'] = cscv.locked_down.apply(int)
 # cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
-cscv.to_csv('Data/所有信息汇总-V1.csv', index=False)
+cscv.to_csv('Data/所有信息汇总-V2.csv', index=False)
 
 
 

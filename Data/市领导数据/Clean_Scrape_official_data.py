@@ -16,6 +16,7 @@ import statsmodels.api as sm
 cs = pd.read_excel('CN_Provinces/市领导数据/市委书记.xlsx')
 cs = cs[cs.year == 2018]
 cs['birthmonth'] = cs.bmymager.apply(pd.to_datetime)
+# 用2018因为特殊原因
 cs['age'] = (pd.to_datetime('2018-02-01') - cs['birthmonth']).astype('<m8[Y]')
 # cs['birth'] = cs.bmymager.apply(pd.to_datetime)
 cs.to_excel('CN_Provinces/CN_Policy-不用了/2018-all_secretary_info.xlsx', index=False)
