@@ -229,20 +229,12 @@ cscv['is_female'] = (cscv.sex == '女').apply(int)
 
 # %% 添加城市短名 + merge 百度迁徙
 cscv['ct_shortname'] = cscv.ctnm.apply(lambda x: x[:-1] if x[-1] =='市' else x)
+bd = pd.read_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv')
 
-# 处理百度迁徙数据
-bd = pd.read_excel('Data/Pop_Movement/baidu_index-2019~20/Data/migrate_Trend.xlsx',
-                   sheet_name='internalflowhistory')
-bd.dropna(inplace=True)
-bd.rename(columns={'Unnamed: 0': 'name', 'Unnamed: 1': 'type'}, inplace=True)
-bd.loc[bd.name == '吉林市', 'name'] = '吉林'
-bd['name'] = bd.name.apply(lambda x: x[:-2] if x[-2:] == '地区' else x )
-dates = ['2020-01-24', '2020-01-25', '2020-01-26', '2020-01-27', '2020-01-28', '2020-01-29', '2020-01-30', '2020-01-31', '2020-02-01','2020-02-02', '2020-02-03', '2020-02-04', '2020-02-05', '2020-02-06','2020-02-07', '2020-02-08', '2020-02-09', '2020-02-10', '2020-02-11','2020-02-12', '2020-02-13', '2020-02-14', '2020-02-15', '2020-02-16','2020-02-17', '2020-02-18', '2020-02-19', '2020-02-20', '2020-02-21','2020-02-22', '2020-02-23', '2020-02-24', '2020-02-25', '2020-02-26','2020-02-27', '2020-02-28', '2020-02-29']
-dates = [i.replace('-', '') for i in dates]
-dates19 = [i.replace('2020', '2019') for i in dates]
-bd = bd[[i.replace]]
+cscv = pd.merge(cscv, bd, on='ct_shortname')
 
 
+l = list(bd.columns)
 # %% ===========
 
 
