@@ -102,7 +102,7 @@ cv = cv[cv.columns.tolist()[-2:] + cv.columns.tolist()[:-2]]
 
 
 
-# %% combine 省委书记 + 城市疫情
+# %% combine 省委书记 + 城市疫情 + 副省级
 cscv = pd.merge(cs, cv, how='left',left_on='ctnm', right_on='cityFullName')
 
 fsj = ['沈阳', '大连', '长春', '哈尔滨','南京','杭州', '济南', '青岛', '宁波',
@@ -110,7 +110,6 @@ fsj = ['沈阳', '大连', '长春', '哈尔滨','南京','杭州', '济南', '�
 cscv['sub_prov_ct'] = 0
 for i in fsj:
 	cscv.loc[cscv.cityName == i, 'sub_prov_ct'] = 1
-
 
 # %% cscv COVID data cleaning
 
@@ -128,11 +127,13 @@ cscv.loc[cscv.ctnm == '吉林市', '2020-01-26'] = 1
 for d in dates:
 	cscv[d] = cscv[d].replace(np.nan, 0)
 
+
 # %% GDP!!!
 
 gdp = pd.read_csv('Data/城市数据/GDP/tabula-gdp2018-clean.csv')
 cscv = pd.merge(cscv, gdp, left_on='ctnm', right_on='cityname', how='left')
 cscv['自治州-盟-地区'] = cscv.gdp2018.isnull()
+cscv['in_291'] = cscv.gdp2018.notnull()
 
 # %% Population size
 pop = pd.read_excel('Data/城市数据/Population/pop2018.xlsx')[['popHR18_all', 'ctnm']]
@@ -214,7 +215,7 @@ cs['nativeprov'] = cs.nativeplace.apply(prov_short_name)
 cs['is_STEM_major'] = (cs.majorchara == 2).apply(int)
 
 cscv = pd.merge(cscv, cs, on='name', how='left')
-cscv['rule_in_native_prov'] = cscv.prov_short == cscv.nativeprov
+cscv['rule_in_native_prov'] = (cscv.prov_short == cscv.nativeprov).apply(int)
 cscv['is_BA'] = (cscv.edu == 16).apply(int)
 cscv['is_MA'] = (cscv.edu == 19).apply(int)
 cscv['is_PhD'] = (cscv.edu == 22).apply(int)
@@ -225,6 +226,25 @@ cscv['work_age'] = (pd.to_datetime('2020-02-01') - cscv['firstjobtime']).astype(
 # cs['age'] = (pd.to_datetime('2018-02-01') - cs['birthmonth']).astype('<m8[Y]')
 # cscv.columns
 cscv['is_female'] = (cscv.sex == '女').apply(int)
+
+# %% 添加城市短名 + merge 百度迁徙
+cscv['ct_shortname'] = cscv.ctnm.apply(lambda x: x[:-1] if x[-1] =='市' else x)
+
+# 处理百度迁徙数据
+bd = pd.read_excel('Data/Pop_Movement/baidu_index-2019~20/Data/migrate_Trend.xlsx',
+                   sheet_name='internalflowhistory')
+bd.dropna(inplace=True)
+bd.rename(columns={'Unnamed: 0': 'name', 'Unnamed: 1': 'type'}, inplace=True)
+bd.loc[bd.name == '吉林市', 'name'] = '吉林'
+bd['name'] = bd.name.apply(lambda x: x[:-2] if x[-2:] == '地区' else x )
+dates = ['2020-01-24', '2020-01-25', '2020-01-26', '2020-01-27', '2020-01-28', '2020-01-29', '2020-01-30', '2020-01-31', '2020-02-01','2020-02-02', '2020-02-03', '2020-02-04', '2020-02-05', '2020-02-06','2020-02-07', '2020-02-08', '2020-02-09', '2020-02-10', '2020-02-11','2020-02-12', '2020-02-13', '2020-02-14', '2020-02-15', '2020-02-16','2020-02-17', '2020-02-18', '2020-02-19', '2020-02-20', '2020-02-21','2020-02-22', '2020-02-23', '2020-02-24', '2020-02-25', '2020-02-26','2020-02-27', '2020-02-28', '2020-02-29']
+dates = [i.replace('-', '') for i in dates]
+dates19 = [i.replace('2020', '2019') for i in dates]
+bd = bd[[i.replace]]
+
+
+# %% ===========
+
 
 # %% check
 
