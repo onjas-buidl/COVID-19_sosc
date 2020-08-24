@@ -16,23 +16,19 @@ dates = ['2020-01-' + str(i) for i in range(24, 32)] + \
 data = data[data.prov != '湖北省']
 data['gdp_per_10k'] = data['gdp2018'] / data.popHR18_all
 data = data[~data['自治州-盟-地区']]
-
-
-formula_string = 'locked_on_date ~ case_on_date + gdp2018 + case_per_10k + ' +\
-					  'second_ind + third_ind + ' +  \
-					  'sub_prov_ct + age_feb20 + tenure + prov_leader_rank + ' +  \
-					  'yiji_jan23 + yiji_jan24 + yiji_jan25 + yiji_jan26 + ' + \
-					  'num_hospital_total + num_doctors_total + ' +  \
-					  'num_firm_total + pct_of_non_domestic_firm + ' + \
-					  'is_STEM_major + is_BA + is_MA + is_PhD + is_female + ' +  \
-					  'rule_in_native_prov + party_age + work_age'
-
-vars = formula_string.split(' + ')
-vars = vars[0].split(' ~ ') + vars[1:]
-
-
-
 # %% 总regression using smf - dep=included dummy
+dep_var = 'locked_on_date'
+dep_var = 'bdidx_avgdiff_date'
+
+indep_string = ' ~ case_on_date + gdp2018 + case_per_10k + ' +\
+				'second_ind + third_ind + ' +  \
+				'sub_prov_ct + age_feb20 + tenure + prov_leader_rank + ' +  \
+				'yiji_jan23 + yiji_jan24 + yiji_jan25 + yiji_jan26 + ' + \
+				'num_hospital_total + num_doctors_total + ' +  \
+				'num_firm_total + pct_of_non_domestic_firm + ' + \
+				'is_STEM_major + is_BA + is_MA + is_PhD + is_female + ' +  \
+				'rule_in_native_prov + party_age + work_age'
+
 fix_date = '2020-02-04'
 reg_results = []
 
@@ -44,7 +40,7 @@ for fix_date in tqdm(dates[10:]):
 	data['case_per_10k'] = data['case_on_date'] / data['popHR18_all']
 
 
-	results = smf.ols(formula_string, data = data).fit()
+	results = smf.ols(dep_var + indep_string, data = data).fit()
 
 
 	res_dict = {}  # dict(results.params)

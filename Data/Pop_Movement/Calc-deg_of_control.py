@@ -23,7 +23,7 @@ dates19 = ['20190124', '20190125', '20190126', '20190127', '20190128', '20190129
 dates19_match = ['20190204', '20190205', '20190206', '20190207', '20190208', '20190209', '20190210', '20190211', '20190212', '20190213', '20190214', '20190215', '20190216', '20190217', '20190218', '20190219', '20190220', '20190221', '20190222', '20190223', '20190224', '20190225', '20190226', '20190227', '20190228', '20190301', '20190302', '20190303', '20190304', '20190305', '20190306', '20190307', '20190308', '20190309', '20190310', '20190311', '20190312']
 l = list(bd.columns)
 
-# %% create mean difference column
+# %% create mean difference -- holiday-match
 bd['20sum'] = 0
 bd['19sum'] = 0
 for i in dates:
@@ -32,11 +32,22 @@ bd['20sum'] = bd['20sum'] / len(dates)
 for i in dates19_match:
     bd['19sum'] = bd['19sum'] + bd[i]
 bd['19sum'] = bd['19sum'] / len(dates)
-bd['bdidx_avgdiff37_on_holiday'] = bd['19sum'] - bd['20sum']
+bd['bdidx_avgdiff_holiday'] = bd['19sum'] - bd['20sum']
 
 bd.rename(columns={'name': 'ct_shortname'}, inplace=True)
+# %% create mean difference -- date match
+bd['20sum'] = 0
+bd['19sum'] = 0
+for i in dates:
+    bd['20sum'] = bd['20sum'] + bd[i]
+bd['20sum'] = bd['20sum'] / len(dates)
+for i in dates19:
+    bd['19sum'] = bd['19sum'] + bd[i]
+bd['19sum'] = bd['19sum'] / len(dates)
+bd['bdidx_avgdiff_date'] = bd['19sum'] - bd['20sum']
 
-bd[['ct_shortname', 'bdidx_avgdiff37_on_holiday']].to_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv', index=False)
+
+bd[['ct_shortname', 'bdidx_avgdiff_holiday', 'bdidx_avgdiff_date']].to_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv', index=False)
 # %% plot to check -- 按公历日期
 # ctnm = '嘉兴'
 city_name = '西宁'
