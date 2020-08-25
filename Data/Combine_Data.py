@@ -199,6 +199,12 @@ firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total', 'pct_of
 
 cscv = pd.merge(cscv, firms, on='ctnm', how='left')
 
+# %% 城市产业就业share
+emp = pd.read_excel('Data/城市数据/就业/分产业就业share.xlsx')
+emp.primary_emp_share_total = 100 - emp.secondary_emp_share_total - emp.tertiary_emp_share_total
+cscv = pd.merge(cscv, emp[['ctnm', 'primary_emp_share_total', 'secondary_emp_share_total', 'tertiary_emp_share_total']],
+                on='ctnm', how='left')
+
 # %% 添加市委书记具体信息
 data = pd.read_csv('Data/Aggregate_Data/所有信息汇总-V1.csv')
 prov_list = list(data.prov_short.unique())
@@ -227,6 +233,8 @@ cscv['work_age'] = (pd.to_datetime('2020-02-01') - cscv['firstjobtime']).astype(
 # cscv.columns
 cscv['is_female'] = (cscv.sex == '女').apply(int)
 
+
+
 # %% 添加城市短名 + merge 百度迁徙
 cscv['ct_shortname'] = cscv.ctnm.apply(lambda x: x[:-1] if x[-1] =='市' else x)
 bd = pd.read_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv')
@@ -234,7 +242,8 @@ bd = pd.read_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv')
 cscv = pd.merge(cscv, bd, on='ct_shortname')
 
 
-l = list(bd.columns)
+
+
 # %% ===========
 
 

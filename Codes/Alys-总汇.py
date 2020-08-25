@@ -18,7 +18,8 @@ data['gdp_per_10k'] = data['gdp2018'] / data.popHR18_all
 data = data[~data['自治州-盟-地区']]
 # %% 总regression using smf - dep=included dummy
 dep_var = 'locked_on_date'
-dep_var = 'bdidx_avgdiff_date'
+# dep_var = 'bdidx_avgdiff_date'
+dep_var = 'bdidx_avgdiff_holiday'
 
 indep_string = ' ~ case_on_date + gdp2018 + case_per_10k + ' +\
 				'second_ind + third_ind + ' +  \
@@ -26,6 +27,7 @@ indep_string = ' ~ case_on_date + gdp2018 + case_per_10k + ' +\
 				'yiji_jan23 + yiji_jan24 + yiji_jan25 + yiji_jan26 + ' + \
 				'num_hospital_total + num_doctors_total + ' +  \
 				'num_firm_total + pct_of_non_domestic_firm + ' + \
+				'primary_emp_share_total + secondary_emp_share_total + tertiary_emp_share_total + ' + \
 				'is_STEM_major + is_BA + is_MA + is_PhD + is_female + ' +  \
 				'rule_in_native_prov + party_age + work_age'
 
@@ -38,6 +40,8 @@ for fix_date in tqdm(dates[10:]):
 		lambda x: int(not (not (isinstance(x, str)) or pd.to_datetime(x) > fix_datetime)))
 	data['case_on_date'] = data[fix_date]
 	data['case_per_10k'] = data['case_on_date'] / data['popHR18_all']
+
+	# if fix_date == '2020-02-25':
 
 
 	results = smf.ols(dep_var + indep_string, data = data).fit()
@@ -58,10 +62,13 @@ for fix_date in tqdm(dates[10:]):
 
 reg_results = pd.DataFrame(reg_results)
 reg_results.index = dates[10:]
-reg_results.to_csv('/Users/qitianhu/Desktop/reg_results_'+str(formula_string.count('+')+1)+'var.csv')
+reg_results.to_csv('/Users/qitianhu/Desktop/results_'+dep_var+'-'+str(indep_string.count('+')+1)+'var.csv')
 
 # %% export to STATA
 
 data[['locked_on_date','case_on_date', 'gdp2018', 'case_per_10k', 'second_ind', 'third_ind', 'sub_prov_ct', 'age_feb20', 'tenure', 'prov_leader_rank', 'yiji_jan23', 'yiji_jan24', 'yiji_jan25', 'yiji_jan26', 'num_hospital_total', 'num_doctors_total', 'num_firm_total', 'pct_of_non_domestic_firm', 'is_STEM_major', 'is_BA', 'is_MA', 'is_PhD', 'is_female', 'rule_in_native_prov', 'party_age', 'work_age']].to_stata('Data/feb_29_alldata.dta')
 
 
+l = indep_string.split(' + ')
+l[0] = l[0][3:]
+data[l].to_stata('Data/'+'feb_29_'+str(indep_string.count('+')+1)+'var_alldata.dta')
