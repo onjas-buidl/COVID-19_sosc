@@ -202,9 +202,19 @@ cscv = pd.merge(cscv, firms, on='ctnm', how='left')
 # %% 城市产业就业share
 emp = pd.read_excel('Data/城市数据/就业/分产业就业share.xlsx')
 emp.primary_emp_share_total = 100 - emp.secondary_emp_share_total - emp.tertiary_emp_share_total
+
+emp[~emp.ctnm.isin(cscv.ctnm)].ctnm
+
+# supp = pd.read_excel('/Users/qitianhu/Downloads/数据中国城市数据-不完整/产值.xlsx')
+# a = supp[(supp.city == '钦州')&(supp.year == 2018)]
+# a.loc[a.industry == '第一产业', 'total_employ']*100 /  a.total_employ.sum()
+# a.loc[a.industry == '第二产业', 'total_employ']*100 /  a.total_employ.sum()
+# a.loc[a.industry == '第三产业', 'total_employ']*100 /  a.total_employ.sum()
+# needs = cscv[cscv.in_291]
+# needs[needs.primary_emp_share_total.isnull()].ctnm
+
 cscv = pd.merge(cscv, emp[['ctnm', 'primary_emp_share_total', 'secondary_emp_share_total', 'tertiary_emp_share_total']],
                 on='ctnm', how='left')
-
 # %% 添加市委书记具体信息
 data = pd.read_csv('Data/Aggregate_Data/所有信息汇总-V1.csv')
 prov_list = list(data.prov_short.unique())

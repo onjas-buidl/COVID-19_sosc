@@ -30,6 +30,8 @@ indep_string = ' ~ case_on_date + gdp2018 + case_per_10k + ' +\
 				'primary_emp_share_total + secondary_emp_share_total + tertiary_emp_share_total + ' + \
 				'is_STEM_major + is_BA + is_MA + is_PhD + is_female + ' +  \
 				'rule_in_native_prov + party_age + work_age'
+indep_vars = indep_string.split(' + ')
+indep_vars[0] = indep_vars[0][3:]
 
 fix_date = '2020-02-04'
 reg_results = []
@@ -68,7 +70,50 @@ reg_results.to_csv('/Users/qitianhu/Desktop/results_'+dep_var+'-'+str(indep_stri
 
 data[['locked_on_date','case_on_date', 'gdp2018', 'case_per_10k', 'second_ind', 'third_ind', 'sub_prov_ct', 'age_feb20', 'tenure', 'prov_leader_rank', 'yiji_jan23', 'yiji_jan24', 'yiji_jan25', 'yiji_jan26', 'num_hospital_total', 'num_doctors_total', 'num_firm_total', 'pct_of_non_domestic_firm', 'is_STEM_major', 'is_BA', 'is_MA', 'is_PhD', 'is_female', 'rule_in_native_prov', 'party_age', 'work_age']].to_stata('Data/feb_29_alldata.dta')
 
+data[['locked_on_date', 'bdidx_avgdiff_holiday', 'bdidx_avgdiff_date'] + indep_vars].to_stata('Data/'+'feb_29_'+str(indep_string.count('+')+1)+'var_alldata.dta')
 
-l = indep_string.split(' + ')
-l[0] = l[0][3:]
-data[l].to_stata('Data/'+'feb_29_'+str(indep_string.count('+')+1)+'var_alldata.dta')
+
+
+
+# %% test for multicolinearty
+import time
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from joblib import Parallel, delayed
+
+def multicollinearity_check(X, thresh=5.0):
+    data_type = X.dtypes
+    # print(type(data_type))
+    int_cols = \
+    X.select_dtypes(include=['int', 'int16', 'int32', 'int64', 'float', 'float16', 'float32', 'float64']).shape[1]
+    total_cols = X.shape[1]
+    try:
+        if int_cols != total_cols:
+            raise Exception('All the columns should be integer or float, for multicollinearity test.')
+        else:
+            variables = list(range(X.shape[1]))
+            dropped = True
+            print('''\n\nThe VIF calculator will now iterate through the features and calculate their respective values.
+            It shall continue dropping the highest VIF features until all the features have VIF less than the threshold of 5.\n\n''')
+            while dropped:
+                dropped = False
+                vif = [variance_inflation_factor(X.iloc[:, variables].values, ix) for ix in variables]
+                print('\n\nvif is: ', vif)
+                maxloc = vif.index(max(vif))
+                if max(vif) > thresh:
+                    print('dropping \'' + X.iloc[:, variables].columns[maxloc] + '\' at index: ' + str(maxloc))
+                    # del variables[maxloc]
+                    X.drop(X.columns[variables[maxloc]], 1, inplace=True)
+                    variables = list(range(X.shape[1]))
+                    dropped = True
+
+            print('\n\nRemaining variables:\n')
+            print(X.columns[variables])
+            # return X.iloc[:,variables]
+            return X
+    except Exception as e:
+        print('Error caught: ', e)
+
+
+data_clean = multicollinearity_check(data[indep_vars])
+
+
