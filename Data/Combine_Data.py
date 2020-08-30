@@ -140,7 +140,7 @@ pop = pd.read_excel('Data/城市数据/Population/pop2018.xlsx')[['popHR18_all',
 pop['Log_popHR18_all'] = pop['popHR18_all'].apply(np.log)
 
 cscv = pd.merge(cscv, pop, on='ctnm', how='left')
-
+cscv['gdp_per_10k'] = cscv['gdp2018'] / cscv.popHR18_all
 # %% GDP产业
 ind = pd.read_excel('Data/城市数据/产业分布/2018城市GDP产业分布.xlsx')
 ind = ind.dropna()

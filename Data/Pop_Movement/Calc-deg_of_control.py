@@ -5,8 +5,6 @@ import matplotlib
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']# 用黑体显示中文
 matplotlib.rcParams['axes.unicode_minus'] = False # in case minus sign is shown as box
 
-
-full = pd.read_csv('Data/所有信息汇总-V2.csv')
 bd = pd.read_excel('Data/Pop_Movement/baidu_index-2019~20/Data/migrate_Trend.xlsx',
                    sheet_name='internalflowhistory')
 
@@ -32,7 +30,7 @@ bd['20sum'] = bd['20sum'] / len(dates)
 for i in dates19_match:
     bd['19sum'] = bd['19sum'] + bd[i]
 bd['19sum'] = bd['19sum'] / len(dates)
-bd['bdidx_avgdiff_holiday'] = bd['19sum'] - bd['20sum']
+bd['bd_feb29avgdif_holi'] = bd['19sum'] - bd['20sum']
 
 bd.rename(columns={'name': 'ct_shortname'}, inplace=True)
 # %% create mean difference -- date match
@@ -44,48 +42,73 @@ bd['20sum'] = bd['20sum'] / len(dates)
 for i in dates19:
     bd['19sum'] = bd['19sum'] + bd[i]
 bd['19sum'] = bd['19sum'] / len(dates)
-bd['bdidx_avgdiff_date'] = bd['19sum'] - bd['20sum']
+bd['bd_feb29avgdif_date'] = bd['19sum'] - bd['20sum']
+
+# %% 只搞到15号
+dates = dates[:23]
+bd['20sum'] = 0
+bd['19sum'] = 0
+for i in dates:
+    bd['20sum'] = bd['20sum'] + bd[i]
+bd['20sum'] = bd['20sum'] / len(dates)
+for i in dates19_match:
+    bd['19sum'] = bd['19sum'] + bd[i]
+bd['19sum'] = bd['19sum'] / len(dates)
+bd['bd_feb15avgdif_holi'] = bd['19sum'] - bd['20sum']
+
+bd.rename(columns={'name': 'ct_shortname'}, inplace=True)
+
+bd['20sum'] = 0
+bd['19sum'] = 0
+for i in dates:
+    bd['20sum'] = bd['20sum'] + bd[i]
+bd['20sum'] = bd['20sum'] / len(dates)
+for i in dates19:
+    bd['19sum'] = bd['19sum'] + bd[i]
+bd['19sum'] = bd['19sum'] / len(dates)
+bd['bd_feb15avgdif_date'] = bd['19sum'] - bd['20sum']
 
 
-bd[['ct_shortname', 'bdidx_avgdiff_holiday', 'bdidx_avgdiff_date']].to_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv', index=False)
+bd[['ct_shortname', 'bd_feb15avgdif_date', 'bd_feb15avgdif_holi',
+    'bd_feb29avgdif_date', 'bd_feb29avgdif_holi']].to_csv('Data/Pop_Movement/百度迁徙平均政策强度.csv', index=False)
 # %% plot to check -- 按公历日期
 # ctnm = '嘉兴'
-city_name = '西宁'
-differences = []
-trend_20 = []
-trend_19 = []
-bd_ = bd[bd.name == city_name]
-# a = bd19[bd19.name == city_name]
-# b = bd20[bd20.name == city_name]
-for i in range(len(dates)):
-       trend_20.append(float(bd_[dates[i]]))
-       trend_19.append(float(bd_[dates19[i]]))
-       # differences.append(a['2019'+i].mean() - b['2020'+i].mean())
-
-plt.plot(dates, trend_20, c='r')
-plt.plot(dates, trend_19, c='b')
-plt.xticks(rotation=45)
-plt.title(city_name+' - 按照公历日期. Red: 2020 Blue: 2019')
-plt.show()
-
-
-
-# city_name = '北京'
-differences = []
-trend_20 = []
-trend_19 = []
-bd_ = bd[bd.name == city_name]
-# a = bd19[bd19.name == city_name]
-# b = bd20[bd20.name == city_name]
-for i in range(len(dates)):
-       trend_20.append(float(bd_[dates[i]]))
-       trend_19.append(float(bd_[dates19_match[i]]))
-       # differences.append(a['2019'+i].mean() - b['2020'+i].mean())
-
-plt.plot(dates, trend_20, c='r')
-plt.plot(dates, trend_19, c='b')
-plt.xticks(rotation=45)
-plt.title(city_name+' - 按照放假日期. Red: 2020 Blue: 2019')
-plt.show()
+# city_name = '西宁'
+# differences = []
+# trend_20 = []
+# trend_19 = []
+# bd_ = bd[bd.name == city_name]
+# # a = bd19[bd19.name == city_name]
+# # b = bd20[bd20.name == city_name]
+# for i in range(len(dates)):
+#        trend_20.append(float(bd_[dates[i]]))
+#        trend_19.append(float(bd_[dates19[i]]))
+#        # differences.append(a['2019'+i].mean() - b['2020'+i].mean())
+#
+# plt.plot(dates, trend_20, c='r')
+# plt.plot(dates, trend_19, c='b')
+# plt.xticks(rotation=45)
+# plt.title(city_name+' - 按照公历日期. Red: 2020 Blue: 2019')
+# plt.show()
+#
+#
+#
+# # city_name = '北京'
+# differences = []
+# trend_20 = []
+# trend_19 = []
+# bd_ = bd[bd.name == city_name]
+# # a = bd19[bd19.name == city_name]
+# # b = bd20[bd20.name == city_name]
+# for i in range(len(dates)):
+#        trend_20.append(float(bd_[dates[i]]))
+#        trend_19.append(float(bd_[dates19_match[i]]))
+#        # differences.append(a['2019'+i].mean() - b['2020'+i].mean())
+#
+# plt.plot(dates, trend_20, c='r')
+# plt.plot(dates, trend_19, c='b')
+# plt.xticks(rotation=45)
+# plt.title(city_name+' - 按照放假日期. Red: 2020 Blue: 2019')
+# plt.show()
 
 

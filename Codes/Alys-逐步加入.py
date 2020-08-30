@@ -13,25 +13,15 @@ import statsmodels.formula.api as smf
 data = pd.read_csv('Data/所有信息汇总-V2.csv')
 dates = ['2020-01-' + str(i) for i in range(24, 32)] + \
         ['2020-02-0' + str(i) for i in range(1, 10)] + ['2020-02-' + str(i) for i in range(10, 30)]
-dates = dates[:23]
+
 data = data[data.prov != '湖北省']
-# data['gdp_per_10k'] = data['gdp2018'] / data.popHR18_all
+data['gdp_per_10k'] = data['gdp2018'] / data.popHR18_all
 data = data[~data['自治州-盟-地区']]
-# %% 总regression PREP
+
+# %% 总regression using smf - dep=included dummy
 dep_var = 'locked_on_date'
-dep_var = 'bd_feb15avgdif_holi'
-
-# indep_string = ' ~ case_on_date + gdp2018 + case_per_10k + ' +\
-# 				'second_ind + third_ind + ' +  \
-# 				# 'sub_prov_ct' + \
-#                 'age_feb20 + tenure + prov_leader_rank + ' +  \
-# 				# 'yiji_jan23 + yiji_jan24 + yiji_jan25 + yiji_jan26 + ' + \
-# 				'num_hospital_total + num_doctors_total + ' +  \
-# 				'num_firm_total + pct_of_non_domestic_firm + ' + \
-# 				'secondary_emp_share_total + tertiary_emp_share_total + ' + \
-# 				'is_STEM_major + is_BA + is_MA + is_PhD + is_female + ' +  \
-# 				'rule_in_native_prov + party_age + work_age'
-
+# dep_var = 'bdidx_avgdiff_date'
+dep_var = 'bdidx_avgdiff_holiday'
 
 l = ['case_on_date', 'gdp2018', 'case_per_10k']
 l += ['second_ind', 'third_ind'                               ]
@@ -45,14 +35,13 @@ l += ['is_STEM_major', 'is_BA', 'is_MA', 'is_PhD', 'is_female']
 l += ['rule_in_native_prov', 'party_age', 'work_age'          ]
 
 
-# indep_vars = indep_string.split(' + ')
-# indep_vars[0] = indep_vars[0][3:]
 indep_vars = l
-indep_string = ' ~ ' + functools.reduce(lambda x, y: x+' + '+y, l)
+indep_string = '~ ' + functools.reduce(lambda x, y: x+' + '+y, l)
 fix_date = '2020-02-04'
 reg_results = []
-
-# %% 总 regress
+# %% regress
+fix_date = '2020-02-04'
+reg_results = []
 
 for fix_date in tqdm(dates[10:]):
 	fix_datetime = pd.to_datetime(fix_date)
@@ -61,8 +50,7 @@ for fix_date in tqdm(dates[10:]):
 	data['case_on_date'] = data[fix_date]
 	data['case_per_10k'] = data['case_on_date'] / data['popHR18_all']
 
-	results = smf.ols(dep_var + indep_string, data = data).fit()
-
+	results = smf.ols(dep_var + indep_string, data=data).fit()
 
 	res_dict = {}  # dict(results.params)
 	for k in results.pvalues.keys():
@@ -81,15 +69,11 @@ reg_results = pd.DataFrame(reg_results)
 reg_results.index = dates[10:]
 reg_results.to_csv('/Users/qitianhu/Desktop/results_'+dep_var+'-'+str(indep_string.count('+')+1)+'var.csv')
 
-# %% export
+# %% export to STATA
 
-# data[['locked_on_date','case_on_date', 'gdp2018', 'popHR18_all', 'case_per_10k', 'second_ind', 'third_ind', 'sub_prov_ct', 'age_feb20', 'tenure', 'prov_leader_rank', 'yiji_jan23', 'yiji_jan24', 'yiji_jan25', 'yiji_jan26', 'num_hospital_total', 'num_doctors_total', 'num_firm_total', 'pct_of_non_domestic_firm', 'is_STEM_major', 'is_BA', 'is_MA', 'is_PhD', 'is_female', 'rule_in_native_prov', 'party_age', 'work_age']].to_stata('Data/feb_29_alldata.dta')
+data[['locked_on_date', 'case_on_date', 'gdp2018', 'case_per_10k', 'second_ind', 'third_ind', 'sub_prov_ct', 'age_feb20', 'tenure', 'prov_leader_rank', 'yiji_jan23', 'yiji_jan24', 'yiji_jan25', 'yiji_jan26', 'num_hospital_total', 'num_doctors_total', 'num_firm_total', 'pct_of_non_domestic_firm', 'is_STEM_major', 'is_BA', 'is_MA', 'is_PhD', 'is_female', 'rule_in_native_prov', 'party_age', 'work_age']].to_stata('Data/feb_29_alldata.dta')
 
-data[['locked_on_date', 'bd_feb15avgdif_holi', 'bd_feb15avgdif_date', 'bd_feb29avgdif_holi', 'bd_feb29avgdif_date', 'popHR18_all'] +
-     indep_vars].to_stata('Data/'+dates[-1][-4:]+'-'+str(indep_string.count('+')+1)+'var_alldata.dta')
-data[['locked_on_date', 'bd_feb15avgdif_holi', 'bd_feb15avgdif_date', 'bd_feb29avgdif_holi','bd_feb29avgdif_date',
-      'popHR18_all', 'prov', 'ctnm'] +
-     indep_vars].to_csv('Data/'+dates[-1][-4:]+'-'+str(indep_string.count('+')+1)+'var_alldata.csv', index=False)
+data[['locked_on_date', 'bdidx_avgdiff_holiday', 'bdidx_avgdiff_date'] + indep_vars].to_stata('Data/'+'feb_29_'+str(indep_string.count('+')+1)+'var_alldata.dta')
 
 
 
