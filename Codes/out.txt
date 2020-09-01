@@ -1,0 +1,24 @@
+	(1)
+VARIABLES	locked_on_date
+	
+case_on_date	0.00100*
+	(0.000552)
+gdp2018	3.34e-09**
+	(1.50e-09)
+age_feb20	0.0203***
+	(0.00736)
+pct_of_non_domestic_firm	0.00378
+	(0.00378)
+second_ind	0.00882***
+	(0.00312)
+third_ind	0.00818**
+	(0.00351)
+is_PhD	-0.0924*
+	(0.0529)
+Constant	-1.743***
+	(0.510)
+	
+Observations	279
+R-squared	0.170
+Robust standard errors in parentheses	
+*** p<0.01, ** p<0.05, * p<0.1	
