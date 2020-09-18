@@ -270,5 +270,5 @@ cscv['locked_down'] = cscv.locked_down.apply(int)
 # cscv.to_csv('Data/每日确诊+市委书记信息+副省级-V1.csv', index=False)
 cscv.to_csv('Data/所有信息汇总-V2.csv', index=False)
 
-
+cscv[cscv.in_291].to_csv('Data/291城信息汇总-V1.csv', index=False)
 
