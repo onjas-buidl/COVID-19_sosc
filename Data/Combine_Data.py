@@ -253,10 +253,6 @@ cscv = pd.merge(cscv, bd, on='ct_shortname')
 
 
 
-
-# %% ===========
-
-
 # %% check
 
 a = cscv[~cscv['自治州-盟-地区']].isnull().sum()
@@ -271,4 +267,5 @@ cscv['locked_down'] = cscv.locked_down.apply(int)
 cscv.to_csv('Data/所有信息汇总-V2.csv', index=False)
 
 cscv[cscv.in_291].to_csv('Data/291城信息汇总-V1.csv', index=False)
+
 
