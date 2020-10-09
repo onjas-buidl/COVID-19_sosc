@@ -191,11 +191,11 @@ firms = firms[firms.ctnm.isin(ct_list)]
 firms['num_firm_total'] = firms['num_firm_total'].apply(lambda x: np.nan if pd.isnull(x) else np.int(x))
 firms['num_domestic_firm_total'] = firms['num_domestic_firm_total'].apply(lambda x: np.nan if pd.isnull(x) else np.int(str(x).replace(' ', '')))
 
-firms['num_non-domestic_firms_total'] = firms.num_firm_total - firms.num_domestic_firm_total
-firms[firms['num_non-domestic_firms_total'].isnull()]
-firms['pct_of_non_domestic_firm'] = (firms['num_non-domestic_firms_total'] / firms['num_firm_total'])*100
+firms['non_domestic_firms_total'] = firms.num_firm_total - firms.num_domestic_firm_total
+firms[firms['non_domestic_firms_total'].isnull()]
+firms['pct_of_non_domestic_firm'] = (firms['non_domestic_firms_total'] / firms['num_firm_total'])*100
 
-firms = firms[['ctnm', 'num_firm_total' ,'num_non-domestic_firms_total', 'pct_of_non_domestic_firm']]
+firms = firms[['ctnm', 'num_firm_total' ,'non_domestic_firms_total', 'pct_of_non_domestic_firm']]
 
 cscv = pd.merge(cscv, firms, on='ctnm', how='left')
 
