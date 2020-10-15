@@ -29,6 +29,31 @@ locked = locked[locked > 0].index.to_list()
 n = 0
 for c in locked:
 	n += int(c in closed)
-# locked的城市是closed的子集
+# locked的城市是closed的子集 subset
 
 d[['city', 'province', 'date', 'd_cum_confirm', 'lockdown','lockdown_w1', 'lockdown_w2', 'closed', 'closed_w1', 'closed_w2', 'pdensity', 'gdp_p','hospital_d', 'cityw']]
+
+
+
+# %% 探索数据集：XiChen和原来的lockdown data的比较
+all = pd.read_csv('Data/276城_3source_by_day.csv')
+ori = all.groupby('ct_shortname').sum()['locked_down']
+ori = ori[ori > 0].index.to_list()
+
+xc_closed = all.groupby('ct_shortname').sum()['xc_closed']
+xc_closed = xc_closed[xc_closed > 0].index.to_list()
+
+xc_lockdown = all.groupby('ct_shortname').sum()['xc_lockdown']
+xc_lockdown = xc_lockdown[xc_lockdown > 0].index.to_list()
+# %%
+c = 0
+for i in xc_lockdown:
+	c += int(i in ori)
+
+# %% age and lockdown percentage
+
+
+
+
+
+

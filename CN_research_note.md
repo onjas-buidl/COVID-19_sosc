@@ -1,6 +1,18 @@
+# 三数据时代
+
+* replicate the graph on Yuhang data? 不同年龄组的lockdown比例
+* Confirm 年龄和其他variable的correlation是比较小的
+
+
+
+
+
+
+
+
+
 * yuhang data -- 原来：襄樊市、莱芜市 现在已经没了..
   * 改成襄阳市 莱芜区
-
 * CN Geodata is from: https://data.humdata.org/dataset/china-administrative-boundaries
 
 

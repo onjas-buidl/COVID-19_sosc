@@ -37,11 +37,11 @@ d = d[['prov', 'citycode', 'ctnm', 'ct_shortname', 'prov_full',
        'nativeplace', 'partytime', 'majorchara', 'firstjobtime', 'nativeprov',
        'is_STEM_major', 'rule_in_native_prov', 'is_BA', 'is_MA', 'is_PhD']]
 
-# %% match using city_shortname in my dataset -- 只有275个城市了
-a = d[~d.ct_shortname.isin(xc.cityname.unique())].ct_shortname.to_list()
-print(a)
-b = xc[~xc.cityname.isin(d.ct_shortname.unique())].cityname.to_list()
-print(list(set(b)))
+# # %% match using city_shortname in my dataset -- 只有275个城市了
+# a = d[~d.ct_shortname.isin(xc.cityname.unique())].ct_shortname.to_list()
+# print(a)
+# b = xc[~xc.cityname.isin(d.ct_shortname.unique())].cityname.to_list()
+# print(list(set(b)))
 
 # %% m - merged
 m = pd.merge(xc, d, left_on='cityname', right_on='ct_shortname', how='inner')
@@ -57,16 +57,17 @@ bd['ct_shortname+date'] = bd.ct_shortname + bd.Date.apply(str)
 
 
 b = pd.merge(m, bd, on='ct_shortname+date', how='left')
+b.rename(columns={'ct_shortname_x': 'ct_shortname'}, inplace=True)
 b = b[~b.Date.isnull()]
 
 
 # %% 整理 + export
 var_list = \
-       ['prov', 'citycode', 'ctnm', 'ct_shortname', 'prov_full', # identifiers
+       ['prov', 'citycode', 'ctnm', 'ct_shortname', 'prov_full', 'date', # identifiers
        # basic info
        'centlon', 'centlat',
        # dependent variables
-       'locked_down', 'lockdown_date', 'bdidx_19m20', 'xc_lockdown', 'xc_closed'
+       'locked_down', 'lockdown_date', 'bdidx_19m20', 'xc_lockdown', 'xc_closed',
        # COVID cases 
        'daySinceFirstCase', 'd_cum_confirm',
        # political
@@ -89,4 +90,50 @@ var_list = \
 b = b[var_list]
 
 
+
+# %% 加上 cumulative case
+ori = pd.read_csv('Data/291城信息汇总-V1.csv')
+b['cumulative_case'] = 0
+import tqdm
+for i in tqdm.tqdm(range(b.shape[0])):
+       v = ori.loc[ori.ct_shortname == b.iloc[i]['ct_shortname']][str(b.iloc[i]['date'])[:10]].values
+       assert v.shape == (1,)
+       b.iloc[i, b.columns.get_loc('cumulative_case')] = v[0]
+
+       # b.ix[i]['cumulative_case'] = v[0]
+
 b.to_csv('Data/276城_3source_by_day.csv', index=False)
+b.index = [i for i in range(b.shape[0])]
+# %% 输出不 by_day 的数据
+
+b = pd.read_csv('Data/276城_3source_by_day.csv')
+
+b[['gdp2018', 'gdp_p', 'gdp_per_10k']].corr()
+
+# b['mean_cumulative_case'] = b.groupby('ctnm').cumulative_case.transform('mean')
+# del b['cumulative_case']
+# b['mean_bdidx_19m20'] = b.groupby('ctnm').bdidx_19m20.transform('mean')
+# del b['bdidx_19m20']
+# b['is_xc_lockdown'] = b.groupby('ctnm').bdidx_19m20.transform('max')
+# del b['xc_lockdown']
+# b['is_xc_closed'] = b.groupby('ctnm').bdidx_19m20.transform('max')
+# del b['xc_closed']
+
+del b['nativeprov'], b['nativeplace'], b['name']
+del b['firstjobtime'], b['d_cum_confirm']
+del b['partytime'], b['date'], b['prov_full']
+
+a = b.groupby('ct_shortname').max()
+a['ct_shortname'] = a.index
+a = a[['ct_shortname'] + a.columns.to_list()]
+a['log_cumulative_case'] = np.log(a.cumulative_case)
+a.to_csv('Data/276城_3source_by_ct.csv', index=False)
+
+# %%
+ag = a.groupby('prov').mean()
+
+ag.sort_values('xc_lockdown')['xc_lockdown']
+# 湖北、江西、浙江、广西、黑龙江、安徽、河北
+
+ag.sort_values('locked_down')['locked_down']
+# 江西、内蒙古、湖北、辽宁、江苏
