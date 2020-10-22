@@ -3,6 +3,7 @@ library(dplyr)
 library(lubridate)
 
 data <- read_csv("Data/276城_3source_by_ct.csv")
+data <- read_csv("Data/276城_3source_by_ct_V2.csv")
 
 ####################################################################
 
@@ -22,6 +23,7 @@ is_female + age_feb20 + party_age + work_age + tenure + majorchara + rule_in_nat
 
 
 f = "~ cumulative_case + prov + age_feb20 + gdp_per_10k + Log_popHR18_all + tertiary_emp_share_total"
+f = "~ cumulative_case + age_feb20 + gdp_per_10k + Log_popHR18_all + tertiary_emp_share_total"
 
 summary(lm(paste('locked_down', f), data)) 
 summary(lm(paste('xc_lockdown', f), data)) 
@@ -35,6 +37,7 @@ summary(glm(paste('xc_lockdown', f), data, family=binomial))
 hist(data$bdidx_19m20)
 
 
+summary(lm(paste('bdidx_19m20_feb1_10', f), data))
 summary(lm(paste('bdidx_19m20', f), data))
 
 

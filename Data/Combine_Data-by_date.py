@@ -9,7 +9,7 @@ import json
 import matplotlib
 from tqdm import tqdm
 
-
+# %%
 xc = pd.read_stata('Data/Xi_Chen_data/2019-nCoV.dta')
 xc = xc[['cityname', 'provincename',
          'date', 'd_cum_confirm', 'lockdown', 'closed',
@@ -104,20 +104,11 @@ for i in tqdm.tqdm(range(b.shape[0])):
 
 b.to_csv('Data/276城_3source_by_day.csv', index=False)
 b.index = [i for i in range(b.shape[0])]
-# %% 输出不 by_day 的数据
+# %% 输出不 by_day 的数据 (by_ct)
 
 b = pd.read_csv('Data/276城_3source_by_day.csv')
 
 b[['gdp2018', 'gdp_p', 'gdp_per_10k']].corr()
-
-# b['mean_cumulative_case'] = b.groupby('ctnm').cumulative_case.transform('mean')
-# del b['cumulative_case']
-# b['mean_bdidx_19m20'] = b.groupby('ctnm').bdidx_19m20.transform('mean')
-# del b['bdidx_19m20']
-# b['is_xc_lockdown'] = b.groupby('ctnm').bdidx_19m20.transform('max')
-# del b['xc_lockdown']
-# b['is_xc_closed'] = b.groupby('ctnm').bdidx_19m20.transform('max')
-# del b['xc_closed']
 
 del b['nativeprov'], b['nativeplace'], b['name']
 del b['firstjobtime'], b['d_cum_confirm']
@@ -127,7 +118,27 @@ a = b.groupby('ct_shortname').max()
 a['ct_shortname'] = a.index
 a = a[['ct_shortname'] + a.columns.to_list()]
 a['log_cumulative_case'] = np.log(a.cumulative_case)
-a.to_csv('Data/276城_3source_by_ct.csv', index=False)
+
+# %% add columns of mean baidu index
+b = pd.read_csv('Data/276城_3source_by_day.csv')
+dates_needed = [i[:4]+'-'+i[4:6]+'-'+i[6:] for i in dates[8:18]]
+b = b[b.date.isin(dates_needed)]
+b = b[['ct_shortname', 'bdidx_19m20']]
+b_ = b.groupby('ct_shortname').mean()
+b_.rename(columns={'bdidx_19m20': 'bdidx_19m20_feb1_10'}, inplace=True)
+b_['ct_shortname'] = b_.index
+b_.index = range(b_.shape[0])
+b_ = b_[['ct_shortname','bdidx_19m20_feb1_10' ]]
+a.index = range(a.shape[0])
+a = a.loc[:,~a.columns.duplicated()]
+
+c = pd.merge(a, b_, on='ct_shortname')
+c.rename(columns={'ct_shortname_x':'ct_shortname_x'},inplace=True)
+# del c['ct_shortname_y']
+
+
+
+c.to_csv('Data/276城_3source_by_ct_V2.csv', index=False)
 
 # %%
 ag = a.groupby('prov').mean()
