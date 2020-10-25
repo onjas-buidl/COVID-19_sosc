@@ -7,9 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import matplotlib
-from tqdm import tqdm
+import tqdm
 
-# %%
+# %% Xi Chen
 xc = pd.read_stata('Data/Xi_Chen_data/2019-nCoV.dta')
 xc = xc[['cityname', 'provincename',
          'date', 'd_cum_confirm', 'lockdown', 'closed',
@@ -37,14 +37,9 @@ d = d[['prov', 'citycode', 'ctnm', 'ct_shortname', 'prov_full',
        'nativeplace', 'partytime', 'majorchara', 'firstjobtime', 'nativeprov',
        'is_STEM_major', 'rule_in_native_prov', 'is_BA', 'is_MA', 'is_PhD']]
 
-# # %% match using city_shortname in my dataset -- 只有275个城市了
-# a = d[~d.ct_shortname.isin(xc.cityname.unique())].ct_shortname.to_list()
-# print(a)
-# b = xc[~xc.cityname.isin(d.ct_shortname.unique())].cityname.to_list()
-# print(list(set(b)))
-
 # %% m - merged
-m = pd.merge(xc, d, left_on='cityname', right_on='ct_shortname', how='inner')
+m = pd.merge(xc, d, left_on='cityname',
+             right_on='ct_shortname', how='inner')
 m['ct_shortname+date'] = m.ct_shortname + m.date.apply(str)
 
 # %% 再添加 Baidu Index 信息
@@ -94,15 +89,12 @@ b = b[var_list]
 # %% 加上 cumulative case
 ori = pd.read_csv('Data/291城信息汇总-V1.csv')
 b['cumulative_case'] = 0
-import tqdm
 for i in tqdm.tqdm(range(b.shape[0])):
        v = ori.loc[ori.ct_shortname == b.iloc[i]['ct_shortname']][str(b.iloc[i]['date'])[:10]].values
        assert v.shape == (1,)
        b.iloc[i, b.columns.get_loc('cumulative_case')] = v[0]
 
-       # b.ix[i]['cumulative_case'] = v[0]
-
-b.to_csv('Data/276城_3source_by_day.csv', index=False)
+# b.to_csv('Data/276城_3source_by_day.csv', index=False)
 b.index = [i for i in range(b.shape[0])]
 # %% 输出不 by_day 的数据 (by_ct)
 
@@ -135,8 +127,6 @@ a = a.loc[:,~a.columns.duplicated()]
 c = pd.merge(a, b_, on='ct_shortname')
 c.rename(columns={'ct_shortname_x':'ct_shortname_x'},inplace=True)
 # del c['ct_shortname_y']
-
-
 
 c.to_csv('Data/276城_3source_by_ct_V2.csv', index=False)
 
