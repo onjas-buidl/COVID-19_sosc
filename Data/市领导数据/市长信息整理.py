@@ -164,6 +164,9 @@ data['mayor_age'] = (pd.to_datetime('2020-02-01') - data['mayor_birth']).astype(
 # data['mayor_party_age'] = (pd.to_datetime('2020-02-01') - data['mayor_partytime']).astype('<m8[Y]')
 data['mayor_work_age'] = (pd.to_datetime('2020-02-01') - data['mayor_joinwork']).astype('<m8[Y]')
 
+data['mayor'] = data.mayor.apply(lambda s:s.replace('\u3000', '').replace(' ', '').replace('现任台州市委副书记', '') )
+data['mayor_sex'].fillna('男', inplace=True)
+data['mayor_race'].fillna('汉族', inplace=True)
 data.to_excel('Data/市领导数据/人民网-市长-V1.xlsx', index=False)
 
 # %%

@@ -93,9 +93,9 @@ l.remove('自治州-盟-地区')
 a = byct[l]
 a.to_stata('Data/276城_3source_by_ct_V3.dta')
 
-# %% 加上市长信息，同样明明
-byct = pd.read_csv('Data/276城_3source_by_ct_V3.csv')
+# %% 加上市长信息，同样在里面
+# byct = pd.read_csv('Data/276城_3source_by_ct_V3.csv')
 mayor = pd.read_excel('Data/市领导数据/人民网-市长-V1.xlsx')
-
-
-
+mayor = mayor[['citycode', 'mayor', 'mayor_age', 'mayor_work_age']]
+a = pd.merge(byct, mayor, how='left', on='citycode')
+a.to_csv('Data/276城_3source_by_ct_V3.csv')
