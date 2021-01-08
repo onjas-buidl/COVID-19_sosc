@@ -75,12 +75,20 @@ byct = pd.merge(byct, xc_cls[['ct_shortname', 'xc_closed_datenum']],
                 on='ct_shortname', how='left')
 byct['xc_closed_datenum'] = byct['xc_closed_datenum'].fillna(30)
 byct['hu_liao_jiang_nei'] = byct.prov.isin(['湖北省', '辽宁省', '江西省', '内蒙古自治区']).apply(int)
-# %%
+# %% export csv
 
 byct.to_csv('Data/276城_3source_by_ct_V3.csv', index=False)
-byct[['lockdown_datenum','xc_lockdown_datenum','xc_closed_datenum',
-      'locked_down', 'xc_lockdown', 'xc_closed', 'hu_liao_jiang_nei',
-      'age_feb20', 'gdp2018', 'cumulative_case', 'hospital_d', 'Log_popHR18_all']].to_stata('Data/276城_3source_by_ct_V3.dta')
+#%% export to Stata form
+byct = pd.read_csv('Data/276城_3source_by_ct_V3.csv')
+# byct[['lockdown_datenum','xc_lockdown_datenum','xc_closed_datenum',
+#       'locked_down', 'xc_lockdown', 'xc_closed', 'hu_liao_jiang_nei', 'tenure',
+#       'age_feb20', 'gdp2018', 'cumulative_case', 'hospital_d', 'Log_popHR18_all']].to_stata('Data/276城_3source_by_ct_V3.dta')
 
+l = byct.columns.tolist()
+l.remove('ct_shortname')
+l.remove('prov')
+l.remove('ctnm')
+l.remove('自治州-盟-地区')
 
-
+a = byct[l]
+a.to_stata('Data/276城_3source_by_ct_V3.dta')

@@ -135,3 +135,25 @@ def multicollinearity_check(X, thresh=5.0):
 data_clean = multicollinearity_check(data[indep_vars])
 
 
+#%% 2021.1.6 新数据
+
+data = pd.read_csv('Data/276城_3source_by_ct_V3.csv')
+data.groupby('age_feb20').mean()['xc_lockdown'].plot();plt.show()
+# data.groupby('age_feb20').mean()['xc_closed'].plot();plt.show()
+data.groupby('age_feb20').mean()['locked_down'].plot();data['age_feb20'].hist();plt.show()
+
+
+data.groupby('age_feb20').mean()['bdidx_19m20'].plot();plt.show()
+data.groupby('age_feb20').mean()['bdidx_19m20_feb1_10'].plot();plt.show()
+data.groupby('age_feb20').mean()['xc_lockdown_datenum'].plot();plt.show()
+data.groupby('age_feb20').mean()['xc_closed_datenum'].plot();plt.show()
+data.groupby('age_feb20').mean()['lockdown_datenum'].plot();plt.show()
+
+
+
+
+
+
+
+
+

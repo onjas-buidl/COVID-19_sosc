@@ -33,4 +33,30 @@ plot(result.fh, conf.int = T, mark = "|", xlab="time in day", ylab = "survival p
 res.cox <-  coxph(Surv(lc_duration, censor) ~ data$"2020-02-15" + data$gdp2018 + data$age_feb20  + data$second_ind + data$third_ind)
 summary(res.cox)
 
+coxph(Surv(lc_duration, censor) ~ data$"2020-02-15" + data$gdp2018 + data$age_feb20  + data$second_ind + data$third_ind)
+
+
+##################################################################
+data <- read_csv("Data/276城_3source_by_day.csv")
+# start_dates <- rep("2020-1-24", 296)
+# start_date <- "2020-1-24"
+# lc_date <- data$lockdown_date %>%
+#   replace_na("2020-02-21 00:00:00 UTC")
+# lc_duration <- as.duration("2020-1-24" %--% lc_date ) / ddays(1)
+# censor <- as.integer(! is.na(data$lockdown_date))
+data$time = as.numeric(data$date) - 18285
+
+coxph(Surv(time,xc_lockdown) ~ cumulative_case+prov+gdp_per_10k+Log_popHR18_all+tertiary_emp_share_total+
+        secondary_emp_share_total+hospital_d+num_doctors_total+age_feb20,data=data)
+
+
+c('cumulative_case', 'prov', 'gdp_per_10k', "Log_popHR18_all", "tertiary_emp_share_total", 
+  "secondary_emp_share_total", "hospital_d", "num_doctors_total")
+
+summary(coxph(Surv(lc_duration, censor) ~ data$"2020-02-15" + data$gdp2018 + data$age_feb20  + data$second_ind + data$third_ind))
+
+
+data <-  
+
+
 
