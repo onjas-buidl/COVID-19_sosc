@@ -28,6 +28,7 @@ page_n = len(full_splitted_str)
 # %%
 ctnm='苏州'
 def get_mayor_info(ctnm):
+	"""用城市名在资料库里搜集，找到最有可能的市长人选"""
 	l_ = []
 	ret_list = []
 	for i in range(page_n):
@@ -50,10 +51,18 @@ def get_mayor_info(ctnm):
 		else:
 			res = []
 			[res.append(x) for x in ret_list if x not in res]
-
 			return res
 
+
+
+def mayor_info_by_name(name, ctnm=''):
+	for i in range(page_n):
+		if name in full_splitted_str_compressed[i]:
+			print(full_splitted_str[i])
+
+mayor_info_by_name('李爱武')
 r = get_mayor_info('苏州')
+
 
 #%%
 d = pd.read_csv('Data/276城_3source_by_ct_V3.csv')
@@ -121,14 +130,42 @@ for i in range(data.shape[0]):
 
 
 # %%
-data.to_excel('Data/市领导数据/人民网-市长-V0.5.xlsx', index=False)
+data['prov'] = d.prov.copy()
+data.to_excel('Data/市领导数据/人民网-市长-V0.5.xlsx', index=True)
 data.mayor_birth.unique()
 
+# %% 经过人工处理之后再来finalize
 
-# cscv['partytime'] = cscv['partytime'].apply(pd.to_datetime)
-# cscv['firstjobtime'] = cscv['firstjobtime'].apply(pd.to_datetime)
-# cscv['party_age'] = (pd.to_datetime('2020-02-01') - cscv['partytime']).astype('<m8[Y]')
-# cscv['work_age'] = (pd.to_datetime('2020-02-01') - cscv['firstjobtime']).astype('<m8[Y]')
+data = pd.read_excel('Data/市领导数据/人民网-市长-V0.8-人工.xlsx')
+for i in range(data.shape[0]):
+	if data.iloc[i]['prov'] == '湖北省':
+		continue
+	if pd.isna(data.iloc[i]['mayor']) and pd.isna(data.iloc[i]['mayor_birth']) and pd.isna(data.iloc[i]['mayor_joinwork']):
+		dt = info_split(data.iloc[i]['records'])
+		for col in dt.keys():
+			if pd.isna(data.iloc[i][col]):
+				data.loc[i, col] = dt[col]
+data.to_excel('Data/市领导数据/人民网-市长-V0.9-人工.xlsx', index=False)
+# %%
+data = pd.read_excel('Data/市领导数据/人民网-市长-V0.95-人工.xlsx')
+def ext_datetime(s):
+	new = ''
+	for c in s:
+		if c in [str(i) for i in range(10)]+['年', '月']:
+			new += c
+
+	return new.replace('年', '.').replace('月','')
+
+# data['mayor_partytime'] = data['mayor_partytime'].apply(ext_datetime).apply(pd.to_datetime)
+data['mayor_joinwork'] = data['mayor_joinwork'].apply(ext_datetime).apply(pd.to_datetime)
+data['mayor_birth'] = data['mayor_birth'].apply(ext_datetime).apply(pd.to_datetime)
+
+data['mayor_age'] = (pd.to_datetime('2020-02-01') - data['mayor_birth']).astype('<m8[Y]')
+# data['mayor_party_age'] = (pd.to_datetime('2020-02-01') - data['mayor_partytime']).astype('<m8[Y]')
+data['mayor_work_age'] = (pd.to_datetime('2020-02-01') - data['mayor_joinwork']).astype('<m8[Y]')
+
+data.to_excel('Data/市领导数据/人民网-市长-V1.xlsx', index=False)
+
 # %%
 i = 7;print(d.ct_shortname[i])
 print(get_mayor_info(d.ct_shortname[i]))
