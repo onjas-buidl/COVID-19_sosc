@@ -22,27 +22,20 @@ is_female + age_feb20 + party_age + work_age + tenure + majorchara + rule_in_nat
 ####################################################################
 
 # 分组：COVID, Econ 总量, Econ structure , political, cs: age, edu 
-
-
-# f = "~ cumulative_case + prov + age_feb20 + gdp_per_10k + Log_popHR18_all + tertiary_emp_share_total"
-# f = "~ cumulative_case + age_feb20 + gdp_per_10k + Log_popHR18_all + tertiary_emp_share_total"
-
-summary(glm(paste('locked_down', f), data, family=binomial))
-summary(glm(paste('xc_lockdown', f), data, family=binomial))
-
-m1 <- glm(locked_down ~ work_age , data, family=binomial)
-m2 <- glm(locked_down ~ work_age+cumulative_case, data, family=binomial)
-m3 <- glm(locked_down ~ work_age+cumulative_case+prov, data, family=binomial)
-m4 <- glm(locked_down ~ work_age+cumulative_case+Log_popHR18_all+gdp_per_10k+pdensity+secondary_emp_share_total +hospital_d, data, family=binomial)
-
-m5 <- glm(xc_lockdown ~ work_age , data, family=binomial)
-m6 <- glm(xc_lockdown ~ work_age+cumulative_case, data, family=binomial)
-m7 <- glm(xc_lockdown ~ work_age+cumulative_case+prov, data, family=binomial)
-m8 <- glm(xc_lockdown ~ work_age+cumulative_case+Log_popHR18_all+gdp_per_10k+pdensity+secondary_emp_share_total +hospital_d, data, family=binomial)
+m1 <- glm(locked_down ~ age_feb20+mayor_age , data, family=binomial)
+m2 <- glm(locked_down ~ age_feb20+mayor_age+cumulative_case, data, family=binomial)
+m3 <- glm(locked_down ~ age_feb20+mayor_age+cumulative_case+prov, data, family=binomial)
+m4 <- glm(locked_down ~ age_feb20+mayor_age+cumulative_case+Log_popHR18_all+gdp_per_10k+pdensity+secondary_emp_share_total +hospital_d, data, family=binomial)
+m5 <- glm(xc_lockdown ~ age_feb20+mayor_age , data, family=binomial)
+m6 <- glm(xc_lockdown ~ age_feb20+mayor_age+cumulative_case, data, family=binomial)
+m7 <- glm(xc_lockdown ~ age_feb20+mayor_age+cumulative_case+prov, data, family=binomial)
+m8 <- glm(xc_lockdown ~ age_feb20+mayor_age+cumulative_case+Log_popHR18_all+gdp_per_10k+pdensity+secondary_emp_share_total +hospital_d, data, family=binomial)
 
 texreg(list(m1,m2,m3,m4,m5,m6,m7,m8),  label="Table 1", 
        caption="logistic regression on two policy measures", float.pos="H",stars = c(0.01,0.05,0.1),caption.above=TRUE,
-       custom.coef.map = list("age_feb20"="secretary age", 'cumulative_case'='COVID case', 'tenure' = NA, 'party_age' = NA, 'work_age' = NA),
+       custom.coef.map = 
+               list("age_feb20"="secretary age", 'cumulative_case'='COVID case', 'tenure' = NA, 'party_age' = NA,
+                    'work_age' = NA, 'mayor_age'=NA, 'mayor_work_age'=NA),
        omit.coef = "prov", custom.model.names = c('1a','1b','1c','1d','2a','2b','2c','2d'))
 
 # scatterplot(data$work_age, data$age_feb20)

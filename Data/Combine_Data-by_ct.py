@@ -99,3 +99,7 @@ mayor = pd.read_excel('Data/市领导数据/人民网-市长-V1.xlsx')
 mayor = mayor[['citycode', 'mayor', 'mayor_age', 'mayor_work_age']]
 a = pd.merge(byct, mayor, how='left', on='citycode')
 a.to_csv('Data/276城_3source_by_ct_V3.csv')
+
+
+byct = byct[byct.prov != '湖北省']
+byct.to_csv('Data/276城_3source_by_ct_V3.1.csv')
