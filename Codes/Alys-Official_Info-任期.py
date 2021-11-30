@@ -1,11 +1,12 @@
-import pandas as pd
+import random
+from collections import Counter
+
 import matplotlib.pyplot as plt
 import numpy as np
-import random
-from tqdm import tqdm
-from collections import Counter
+import pandas as pd
 # import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from tqdm import tqdm
 
 # %% basic plot
 cs = pd.read_excel('CN_Provinces/市领导数据/疫情-20市委书记-331ct-V2.xlsx')
