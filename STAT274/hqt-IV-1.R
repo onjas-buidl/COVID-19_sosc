@@ -1,7 +1,6 @@
 library(tidyverse)
 library(dplyr)
-library(AER)
-library(texreg)
+
 
 d <- read_csv('/Users/qitianhu/Documents/Research/Explore/COVID-19_sosc/STAT274/IVdata-1.csv')
 d$tenure_bi <- as.integer(d$tenure >= 3)

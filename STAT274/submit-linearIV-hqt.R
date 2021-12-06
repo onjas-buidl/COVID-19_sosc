@@ -26,10 +26,12 @@ summary(iv2)
 texreg(iv2)
 
 
+# quick check at last 
+cor(d$xunshi, d$xc_lockdown)
 
+cor(d$xunshi, d$tenure_bi)
 
-
-
+# summary(lm(xc_lockdown ~ tenure_bi + sub_prov_ct + gdp_per_10k + primary_emp_share_total, d))
 
 
 
