@@ -1,0 +1,26 @@
+{
+    "lockdown":["locked_down", "lockdown_date", "bdidx_19m20", "xc_lockdown", "xc_closed"],
+    "economic": ["sub_prov_ct", "gdp2018", "自治州-盟-地区", "in_291",
+        "pdensity", "gdp_p", "hospital_d", "popHR18_all", "Log_popHR18_all",
+        "gdp_per_10k", "primary_ind", "second_ind", "third_ind",
+        "prov_leader_rank", "num_hospital_total", "num_doctors_total","pct_of_non_domestic_firm", "primary_emp_share_total",
+        "secondary_emp_share_total", "tertiary_emp_share_total"],
+    "personal": ["inaug_time",
+        "birthmonth", "is_female", "age_feb20", "party_age", "work_age",
+        "tenure", "majorchara", "is_STEM_major", "rule_in_native_prov", "is_BA",
+        "is_MA", "is_PhD"],
+    "covid": ["cumulative_case", "log_cumulative_case"]
+}
+
+
+// "sub_prov_ct", "gdp2018", "自治州-盟-地区", "in_291",
+//     "pdensity", "gdp_p", "hospital_d", "popHR18_all", "Log_popHR18_all",
+//     "gdp_per_10k", "primary_ind", "second_ind", "third_ind",
+//     "prov_leader_rank", "num_hospital_total", "num_doctors_total",
+//     "num_firm_total", "non_domestic_firms_total",
+//     "pct_of_non_domestic_firm", 
+//     , , 
+    
+//     "bdidx_19m20_feb1_10", "lockdown_datenum", "xc_lockdown_datenum",
+//     "xc_closed_datenum", "hu_liao_jiang_nei", "mayor", "mayor_age",
+//     "mayor_work_age", "xunshi", "treatment", "outcome"]
